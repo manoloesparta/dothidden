@@ -1,17 +1,17 @@
-name: Backend
+name: Frontend
 
 on:
   push:
     paths:
-    - 'server/'
+    - 'client/**'
     branches: 
-    - main
+    - main 
 
   pull_request:
     paths:
-    - 'server/**'
+    - 'client/**'
     branches:
-    - main 
+    - main
 
   workflow_dispatch:
 
@@ -37,6 +37,4 @@ jobs:
       - run: npm install
 
       - run: npm run lint
-
-      - run: npm test
 
