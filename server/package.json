@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "fix": "npx eslint . --fix",
     "lint": "npx eslint .",
-    "test": "jest tests/ --config=jest.config.js"
+    "test": "jest tests/ --config=jest.config.js --passWithNoTests"
   },
   "author": "Admin de Fideos",
   "license": "MIT",
