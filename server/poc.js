@@ -27,14 +27,19 @@ class Game {
     this.eventsManager = new GameEventsManager();
     this.seeker = null;
     this.hiders = [];
+    this.players = [];
   }
 
-  addHider(hider) {
+  addHider(player) {
+    const hider = new Hider(player.name, player.x, player.y); 
+    hider.goCrazy();
     this.hiders.push(hider);
     this.eventsManager.subscribe('hide', hider);
   }
 
-  addSeeker(seeker) {
+  addSeeker(player) {
+    const seeker = new Seeker(player.name, player.x, player.y);
+    seeker.goCrazy();
     this.seeker = seeker;
     this.eventsManager.subscribe('seek', seeker);
   }
@@ -77,6 +82,18 @@ class Game {
     clearInterval(this.hideInterval);
     clearInterval(this.checkInterval);
   }
+
+  //Assuming we get list of players from lobby
+  addPlayer(fren){
+    this.players.push(fren)
+  }
+
+  assignRoles() {
+    const hiderId = randInt(this.players.length)
+    this.addSeeker(this.players[hiderId])
+    this.players.splice(hiderId, 1)
+    this.players.forEach(fren => this.addHider(fren));
+  }
 }
 
 class Player {
@@ -99,12 +116,14 @@ class Player {
 
   goCrazy() {
     this.interval = setInterval(() => {
-      this.moveTo(randInt(10), randInt(10));
+      this.moveTo(randInt(100), randInt(100));
     }, 1 * 1000);
     setTimeout(() => {
       clearInterval(this.interval);
     }, 60 * 1000);
   }
+
+  
 }
 
 class Hider extends Player {
@@ -126,7 +145,6 @@ class Hider extends Player {
 class Seeker extends Player {
   update(hiders) {
     const encode = (index) => String.fromCharCode(index + 65);
-
     hiders
       .map((hider) => this.proximity(hider).toFixed(2))
       .map((distance, index) => console.log(`${this.name}: Hider${encode(index)} is ${distance}m away`));
@@ -135,16 +153,15 @@ class Seeker extends Player {
 
 const partida = new Game('XJSDG');
 
-const marin = new Hider('Marin', 5, 0);
-partida.addHider(marin);
-const mizael = new Hider('Mizael', 7, 0);
-partida.addHider(mizael);
+//Instancing actually done in-lobby
+const daw = new Player('Daw', 5, 2) 
+const mizael = new Player('Mizael', 6, 6) 
+const dagz = new Player('DAGZ', 1, 5)
 
-const dagz = new Seeker('DAGZ', 0, 0);
-partida.addSeeker(dagz);
+partida.addPlayer(daw);
+partida.addPlayer(mizael);
+partida.addPlayer(dagz);
+partida.assignRoles(); 
 
-marin.goCrazy();
-mizael.goCrazy();
-dagz.goCrazy();
-
+//console.log(partida);
 partida.start();
