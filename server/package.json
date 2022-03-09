@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint": "npx eslint . --fix",
+    "fix": "npx eslint . --fix",
+    "lint": "npx eslint .",
     "test": "jest tests/ --config=jest.config.js"
   },
   "author": "Admin de Fideos",
