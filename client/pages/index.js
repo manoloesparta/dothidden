@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Head from 'next/head'
 
 import vercel from '../public/vercel.svg'
@@ -58,7 +57,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <Image src={vercel} alt="Vercel" className="logo" />
+          <img src={vercel} alt="Vercel" className="logo" />
         </a>
       </footer>
 
