@@ -1,0 +1,6 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Template to update update ECS task on changes
+
+Resources:
+
+Outputs:

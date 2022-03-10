@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  Repository:
+    Type: String
+    Description: GitHub repository URL
+
+  OauthToken:
+    Type: String
+    Description: GitHub access token
+    NoEcho: true
+
+  Domain:
+    Type: String
+    Description: Domain name for application
+
+Resources:
+
+  AmplifyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - amplify.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: Amplify
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: "amplify:*"
+                Resource: "*"
+
+  AmplifyApp:
+    Type: "AWS::Amplify::App"
+    Properties:
+      Name: TodoApp
+      Repository: !Ref Repository
+      Description: VueJS Todo example app
+      OauthToken: !Ref OauthToken
+      BuildSpec: |-
+        version: 1
+        applications:
+          - appRoot: client
+            frontend:
+              phases:
+                preBuild:
+                  commands:
+                    - npm install
+                build:
+                  commands:
+                    - npm run build
+              artifacts:
+                files:
+                    - '**/*'
+                baseDirectory: out
+              cache:
+                paths:
+                    - node_modules/**/*
+      IAMServiceRole: !GetAtt AmplifyRole.Arn
+
+  AmplifyBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      BranchName: main
+      AppId: !GetAtt AmplifyApp.AppId
+      Description: Main Branch
+      EnableAutoBuild: true
+
+  AmplifyDomain:
+    Type: AWS::Amplify::Domain
+    Properties:
+      DomainName: !Ref Domain
+      AppId: !GetAtt AmplifyApp.AppId
+      SubDomainSettings:
+        - Prefix: main
+          BranchName: !GetAtt AmplifyBranch.BranchName
+
+Outputs:
+
+  DefaultDomain:
+    Value: !GetAtt AmplifyApp.DefaultDomain
+
+  MainBranchUrl:
+    Value: !Join [ ".", [ !GetAtt AmplifyBranch.BranchName, !GetAtt AmplifyDomain.DomainName ]]

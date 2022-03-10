@@ -1,7 +1,5 @@
 import Head from 'next/head'
 
-import vercel from '../public/vercel.svg'
-
 export default function Home() {
   return (
     <div className="container">
@@ -57,7 +55,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <img src={vercel} alt="Vercel" className="logo" />
+          <img src="/vercel.svg" alt="Vercel" className="logo" />
         </a>
       </footer>
 
