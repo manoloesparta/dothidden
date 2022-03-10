@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
+Description: Resources needed for frontend
 
 Parameters:
 
@@ -41,9 +42,9 @@ Resources:
   AmplifyApp:
     Type: "AWS::Amplify::App"
     Properties:
-      Name: TodoApp
+      Name: dothidden
       Repository: !Ref Repository
-      Description: VueJS Todo example app
+      Description: Frontend for the dothidden project
       OauthToken: !Ref OauthToken
       BuildSpec: |-
         version: 1
@@ -66,12 +67,20 @@ Resources:
                     - node_modules/**/*
       IAMServiceRole: !GetAtt AmplifyRole.Arn
 
-  AmplifyBranch:
+  MainBranch:
     Type: AWS::Amplify::Branch
     Properties:
       BranchName: main
       AppId: !GetAtt AmplifyApp.AppId
       Description: Main Branch
+      EnableAutoBuild: true
+
+  FrontendBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      BranchName: frontest 
+      AppId: !GetAtt AmplifyApp.AppId
+      Description: Frontend branch for testing
       EnableAutoBuild: true
 
   AmplifyDomain:
@@ -81,7 +90,10 @@ Resources:
       AppId: !GetAtt AmplifyApp.AppId
       SubDomainSettings:
         - Prefix: main
-          BranchName: !GetAtt AmplifyBranch.BranchName
+          BranchName: !GetAtt MainBranch.BranchName
+        - Prefix: frontest
+          BranchName: !GetAtt FrontendBranch.BranchName
+
 
 Outputs:
 
@@ -89,4 +101,7 @@ Outputs:
     Value: !GetAtt AmplifyApp.DefaultDomain
 
   MainBranchUrl:
-    Value: !Join [ ".", [ !GetAtt AmplifyBranch.BranchName, !GetAtt AmplifyDomain.DomainName ]]
+    Value: !Join [ ".", [ !GetAtt MainBranch.BranchName, !GetAtt AmplifyDomain.DomainName ]]
+  
+  FrontendUrl:
+    Value: !Join [ ".", [ !GetAtt FrontendBranch.BranchName, !GetAtt AmplifyDomain.DomainName ]]
