@@ -40,7 +40,7 @@ Resources:
                 Resource: "*"
 
   AmplifyApp:
-    Type: "AWS::Amplify::App"
+    Type: AWS::Amplify::App
     Properties:
       Name: dothidden
       Repository: !Ref Repository
@@ -89,7 +89,7 @@ Resources:
       DomainName: !Ref Domain
       AppId: !GetAtt AmplifyApp.AppId
       SubDomainSettings:
-        - Prefix: main
+        - Prefix: ""
           BranchName: !GetAtt MainBranch.BranchName
         - Prefix: frontest
           BranchName: !GetAtt FrontendBranch.BranchName
