@@ -7,6 +7,8 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: dothidden
+  
+  
 
 Outputs:
 

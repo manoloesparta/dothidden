@@ -8,9 +8,12 @@ const { Server } = require('socket.io');
 
 const io = new Server(server);
 
-app.get('/', (req, res) => {
-  console.log(req);
-  res.send('hola');
+app.get('/ping', (req, res) => {
+  res.sendStatus(200);
+});
+
+app.get('/health', (req, res) => {
+  res.sendStatus(200);
 });
 
 io.on('connection', (socket) => {
