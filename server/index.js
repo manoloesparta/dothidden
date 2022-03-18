@@ -5,8 +5,6 @@ const { GameManager } = require('./domain/GameManager');
 
 const app = express();
 const server = http.createServer(app);
-
-
 const currentGames = new GameManager();
 
 app.get('/ping', (req, res) => {
@@ -23,7 +21,7 @@ app.post('/game', (req, res) => {
 });
 
 app.post('/game/{gameId}/players/{playerNick}', (req, res) => {
-  const {gameId, playerNick} = req.params
+  const { gameId, playerNick } = req.params;
   const game = currentGames.getGame(gameId);
   const player = new Player(playerNick);
   game.addPlayer(player);

@@ -2,7 +2,6 @@ const { Game } = require('./Game');
 const { NotFoundException } = require('../utils/exceptions');
 const { randString } = require('../utils/utils');
 
-
 class GameManager {
   constructor() {
     this.games = {};
