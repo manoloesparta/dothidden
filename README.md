@@ -2,5 +2,8 @@
 
 Hide and seek with cellphones
 
-* [Url](https://hidenseek.manoloesparta.com/)
-* [Testing url](https://frontest.hidenseek.manoloesparta.com/)
+## Links
+
+* [Application URL](https://hidenseek.manoloesparta.com/)
+* [Testing URL](https://frontest.hidenseek.manoloesparta.com/)
+* [API Base URL](https://api.hidenseek.manoloesparta.com)

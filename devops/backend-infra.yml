@@ -1,18 +1,256 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Resource needed for the backend
 
+Parameters:
+
+  VPC: 
+    Type: String
+    Default: vpc-0c437e98c64953d42
+  SubnetA:
+    Type: String
+    Default: subnet-066365469474684a9
+  SubnetB:
+    Type: String
+    Default: subnet-0a45c2c5f684c5c23
+  Certificate:
+    Type: String
+    Default:  arn:aws:acm:us-east-1:922586731243:certificate/7661b2e0-05d4-48e7-8a23-55389037d6bc
+  Image:
+    Type: String
+    Default: 922586731243.dkr.ecr.us-east-1.amazonaws.com/dothidden
+  ServiceName:
+    Type: String
+    Default: dothidden-games
+  ContainerPort:
+    Type: Number
+    Default: 8080
+  LoadBalancerPort:
+    Type: Number
+    Default: 443
+  HealthCheckPath:
+    Type: String
+    Default: /health
+  HostedZoneName:
+    Type: String
+    Default: manoloesparta.com
+  Subdomain:
+    Type: String
+    Default: api.hidenseek
+  MinContainers:
+    Type: Number
+    Default: 1
+  MaxContainers:
+    Type: Number
+    Default: 2 
+  AutoScalingTargetValue:
+    Type: Number
+    Default: 50
+
 Resources:
 
-  DotHiddenEcrRepo:
+  EcrRepo:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: dothidden
+
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Join ['', [!Ref ServiceName, Cluster]]
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DependsOn: LogGroup
+    Properties:
+      Family: !Join ['', [!Ref ServiceName, TaskDefinition]]
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: 256
+      Memory: 0.5GB
+      ExecutionRoleArn: !Ref ExecutionRole
+      TaskRoleArn: !Ref TaskRole
+      ContainerDefinitions:
+        - Name: !Ref ServiceName
+          Image: !Ref Image
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs
   
-  
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref ServiceName, ExecutionRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref ServiceName, TaskRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+
+  AutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref ServiceName, AutoScalingRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole'
+
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Join ['', [!Ref ServiceName, ContainerSecurityGroup]]
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Join ['', [!Ref ServiceName, LoadBalancerSecurityGroup]]
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref LoadBalancerPort
+          ToPort: !Ref LoadBalancerPort
+          CidrIp: 0.0.0.0/0
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - ListenerHTTPS
+    Properties: 
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref TaskDefinition
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 2
+      HealthCheckGracePeriodSeconds: 30
+      LaunchType: FARGATE
+      NetworkConfiguration: 
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !Ref SubnetA
+            - !Ref SubnetB
+          SecurityGroups:
+            - !Ref ContainerSecurityGroup
+      LoadBalancers:
+        - ContainerName: !Ref ServiceName
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !Ref TargetGroup
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: !Ref HealthCheckPath
+      HealthCheckTimeoutSeconds: 5
+      UnhealthyThresholdCount: 2
+      HealthyThresholdCount: 2
+      Name: !Join ['', [!Ref ServiceName, TargetGroup]]
+      Port: !Ref ContainerPort
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 60
+      TargetType: ip
+      VpcId: !Ref VPC
+
+  ListenerHTTPS:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: !Ref LoadBalancerPort
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: !Ref Certificate
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: 60
+      Name: !Join ['', [!Ref ServiceName, LoadBalancer]]
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Subnets:
+        - !Ref SubnetA
+        - !Ref SubnetB
+
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Join ['', [!Ref HostedZoneName, .]]
+      Name: !Join ['', [!Ref Subdomain, ., !Ref HostedZoneName, .]]
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt LoadBalancer.DNSName
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', [/ecs/, !Ref ServiceName, TaskDefinition]]
+
+  AutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: !Ref MinContainers
+      MaxCapacity: !Ref MaxContainers
+      ResourceId: !Join ['/', [service, !Ref Cluster, !GetAtt Service.Name]]
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      RoleARN: !GetAtt AutoScalingRole.Arn
+
+  AutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Join ['', [!Ref ServiceName, AutoScalingPolicy]]
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref AutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        ScaleInCooldown: 10
+        ScaleOutCooldown: 10
+        TargetValue: !Ref AutoScalingTargetValue
 
 Outputs:
 
-  DotHiddenEcrRepoArn:
-    Value: !GetAtt DotHiddenEcrRepo.Arn
-    Export:
-      Name: DotHiddenEcrRepo
+  Endpoint:
+    Description: Endpoint
+    Value: !Join ['', ['https://', !Ref DNSRecord]]
