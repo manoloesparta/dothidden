@@ -1,12 +1,13 @@
 const express = require('express');
-
-const app = express();
 const http = require('http');
 
-const server = http.createServer(app);
-const { Server } = require('socket.io');
+const { GameManager } = require('./domain/GameManager');
 
-const io = new Server(server);
+const app = express();
+const server = http.createServer(app);
+
+
+const currentGames = new GameManager();
 
 app.get('/ping', (req, res) => {
   res.sendStatus(200);
@@ -16,9 +17,16 @@ app.get('/health', (req, res) => {
   res.sendStatus(200);
 });
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-  console.log(socket);
+app.post('/game', (req, res) => {
+  const gameId = currentGames.createGame();
+  res.status(200).send({ code: gameId });
+});
+
+app.post('/game/{gameId}/players/{playerNick}', (req, res) => {
+  const {gameId, playerNick} = req.params
+  const game = currentGames.getGame(gameId);
+  const player = new Player(playerNick);
+  game.addPlayer(player);
 });
 
 server.listen(8080, () => {

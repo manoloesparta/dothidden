@@ -135,15 +135,15 @@ class Game {
     clearInterval(this.checkInterval);
   }
 
-  addPlayer(fren) {
-    this.players.push(fren);
+  addPlayer(player) {
+    this.players.push(player);
   }
 
   assignRoles() {
     const hiderId = randInt(this.players.length);
     this.addSeeker(this.players[hiderId]);
     this.players.splice(hiderId, 1);
-    this.players.forEach((fren) => this.addHider(fren));
+    this.players.forEach((player) => this.addHider(player));
   }
 }
 
