@@ -9,6 +9,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <input type="button button-fill" value="Hello world!" className="button"/>
+
       <main>
         <h1 className="title">
           Welcome to <a href="https://goo.gl/maps/B7bmmCEpiTnkVLNG7">DAGZ DEV!</a>
