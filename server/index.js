@@ -7,6 +7,8 @@ const app = express();
 const server = http.createServer(app);
 const currentGames = new GameManager();
 
+app.use(express.json());
+
 app.get('/health', (req, res) => {
   res.sendStatus(200);
 });
