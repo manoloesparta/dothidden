@@ -2,10 +2,10 @@ version: '3'
 
 services:
 
-  server:
+  dothidden:
     build: .
     image: dothidden_server
-    container_name: server
+    container_name: dothidden_server
     ports:
       - 8080:8080
     volumes:

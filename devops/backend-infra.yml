@@ -3,4 +3,16 @@ Description: Resource needed for the backend
 
 Resources:
 
+  DotHiddenEcrRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dothidden
+  
+  
+
 Outputs:
+
+  DotHiddenEcrRepoArn:
+    Value: !GetAtt DotHiddenEcrRepo.Arn
+    Export:
+      Name: DotHiddenEcrRepo
