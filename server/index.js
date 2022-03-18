@@ -7,10 +7,6 @@ const app = express();
 const server = http.createServer(app);
 const currentGames = new GameManager();
 
-app.get('/ping', (req, res) => {
-  res.sendStatus(200);
-});
-
 app.get('/health', (req, res) => {
   res.sendStatus(200);
 });
