@@ -2,6 +2,7 @@ const { Game } = require('./Game');
 const { NotFoundException } = require('../utils/exceptions');
 const { randString } = require('../utils/utils');
 
+
 class GameManager {
   constructor() {
     this.games = {};
@@ -32,4 +33,7 @@ class GameManager {
   }
 }
 
-module.exports = { GameManager };
+const currentGames = new GameManager();
+Object.freeze(currentGames);
+
+module.exports = { currentGames };

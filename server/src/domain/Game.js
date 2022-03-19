@@ -1,13 +1,15 @@
 class Game {
-  constructor(gameId, host) {
+  constructor(gameId) {
     this.gameId = gameId;
-    this.host = host;
   }
 
   addHider(player) {
   }
 
   addSeeker(player) {
+  }
+
+  addPlayer(player) {
   }
 
   gameLoop() {
@@ -17,9 +19,6 @@ class Game {
   }
 
   stop() {
-  }
-
-  addPlayer(player) {
   }
 
   assignRoles() {

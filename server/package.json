@@ -4,8 +4,7 @@
   "description": "Hide n seek backend",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node src/app.js",
     "fix": "npx eslint . --fix",
     "lint": "npx eslint .",
     "test": "jest tests/ --config=jest.config.js --passWithNoTests"
