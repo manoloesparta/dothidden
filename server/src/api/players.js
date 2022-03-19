@@ -9,7 +9,7 @@ router.post('/game/{gameId}/players/{playerNick}', (req, res) => {
   const game = currentGames.getGame(gameId);
   const player = new Player(playerNick);
   game.addPlayer(player);
-  res.sendStatus(200)
+  res.sendStatus(200);
 });
 
 module.exports = { PlayerRoutes: router };
