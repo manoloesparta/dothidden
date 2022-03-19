@@ -17,7 +17,7 @@ class ForbiddenException extends Error {
 class BadRequestException extends Error {
   constructor(message) {
     super(message);
-    this.name = "I'm a Teapot";
+    this.name = 'Bad Request';
     this.statusCode = 400;
   }
 }
@@ -29,7 +29,18 @@ class TeapotException extends Error {
     this.statusCode = 418;
   }
 }
+class InternalServerErrorException extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'Internal Server Error';
+    this.statusCode = 500;
+  }
+}
 
 module.exports = {
-  NotFoundException, ForbiddenException, TeapotException, BadRequestException
+  NotFoundException,
+  ForbiddenException,
+  TeapotException,
+  BadRequestException,
+  InternalServerErrorException,
 };
