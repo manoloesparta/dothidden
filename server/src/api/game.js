@@ -2,18 +2,13 @@ const express = require('express');
 
 const { currentGames } = require('../domain/GameManager');
 const { BadRequestException } = require('../utils/exceptions');
-
-const checkRequest = (request) => {
-  if (!('host' in request.body)) {
-    throw new BadRequestException('Must specify host of the game');
-  }
-};
+const { checkBody } = require('../utils/utils');
 
 const router = express.Router();
 
 router.post('/game', (req, res) => {
   try {
-    checkRequest(req);
+    checkBody(req, 'host');
     const host = 'DAGZ';
     const gameId = currentGames.createGame(host);
     res.status(200).send({ code: gameId });
