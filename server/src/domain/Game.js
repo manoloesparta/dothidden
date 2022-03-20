@@ -1,6 +1,10 @@
+const { Player } = require('./Player');
+
 class Game {
-  constructor(gameId) {
+  constructor(gameId, host) {
     this.gameId = gameId;
+    this.host = host;
+    this.players = [];
   }
 
   addHider(player) {
@@ -10,6 +14,11 @@ class Game {
   }
 
   addPlayer(player) {
+    return this.players.push(new Player(player, 0, 0));
+  }
+
+  removePlayer(player) {
+    return this.players.splice(this.players.indexOf(this.players.name), 1);
   }
 
   gameLoop() {

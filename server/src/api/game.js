@@ -5,7 +5,8 @@ const { currentGames } = require('../domain/GameManager');
 const router = express.Router();
 
 router.post('/game', (req, res) => {
-  const gameId = currentGames.createGame();
+  const host = 'DAGZ';
+  const gameId = currentGames.createGame(host);
   res.status(200).send({ code: gameId });
 });
 

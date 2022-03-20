@@ -7,12 +7,14 @@ class GameManager {
     this.games = {};
   }
 
-  createGame() {
+  createGame(host) {
+    // pedir host desde la funcion, o desde afuera?
     let gameId = randString(5);
     while (this.checkExists(gameId)) {
       gameId = randString(5);
     }
-    this.games[gameId] = new Game(gameId);
+    this.games[gameId] = new Game(gameId, host);
+    this.games[gameId].addPlayer(host);
     return gameId;
   }
 
