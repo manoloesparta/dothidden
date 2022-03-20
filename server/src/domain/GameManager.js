@@ -24,7 +24,7 @@ class GameManager {
     if (this.checkExists(gameId)) {
       return this.games[gameId];
     }
-    throw NotFoundException(`GameId: ${gameId} not found`);
+    throw new NotFoundException(`GameId: ${gameId} not found`);
   }
 
   removeGame(gameId) {
