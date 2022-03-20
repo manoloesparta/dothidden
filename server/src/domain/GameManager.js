@@ -8,7 +8,6 @@ class GameManager {
   }
 
   createGame(host) {
-    // pedir host desde la funcion, o desde afuera?
     let gameId = randString(5);
     while (this.checkExists(gameId)) {
       gameId = randString(5);

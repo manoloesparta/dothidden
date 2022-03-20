@@ -17,8 +17,8 @@ class Game {
     return this.players.push(new Player(player, 0, 0));
   }
 
-  removePlayer(player) {
-    return this.players.splice(this.players.indexOf(this.players.name), 1);
+  removePlayer(index) {
+    return this.players.splice(index, 1);
   }
 
   gameLoop() {
