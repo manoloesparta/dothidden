@@ -1,11 +1,11 @@
 class HttpExceptions extends Error {
   constructor(message) {
-    super(message)
-    this.name = 'HTTP error message'
-    this.statusCode = 444
+    super(message);
+    this.name = 'HTTP error message';
+    this.statusCode = 444;
   }
 }
- 
+
 class NotFoundException extends HttpExceptions {
   constructor(message) {
     super(message);

@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const { GameRoutes } = require('./game');
 const { PlayerRoutes } = require('./players');
 
-const format = '[:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] - ":user-agent"';
+const format = '[:date[clf]] ":method :url" :status - ":user-agent"';
 
 const createApp = () => {
   const app = express();

@@ -43,7 +43,7 @@ Parameters:
     Default: 1
   MaxContainers:
     Type: Number
-    Default: 2 
+    Default: 1
   AutoScalingTargetValue:
     Type: Number
     Default: 50
@@ -168,7 +168,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 10
+      HealthCheckIntervalSeconds: 300
       HealthCheckPath: !Ref HealthCheckPath
       HealthCheckTimeoutSeconds: 5
       UnhealthyThresholdCount: 2
