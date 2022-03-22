@@ -9,8 +9,7 @@ const router = express.Router();
 router.post('/game', (req, res) => {
   try {
     checkBody(req, 'host');
-    const host = 'DAGZ';
-    const gameId = currentGames.createGame(host);
+    const gameId = currentGames.createGame(req.body.host);
     res.status(200).send({ code: gameId });
   } catch (error) {
     console.error(error);

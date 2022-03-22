@@ -17,8 +17,8 @@ class Game {
     return this.players.push(new Player(player, 0, 0));
   }
 
-  removePlayer(index) {
-    return this.players.splice(index, 1);
+  removePlayer(player) {
+    this.players = this.players.filter((user) => user.name !== player);
   }
 
   gameLoop() {
