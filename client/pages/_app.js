@@ -11,6 +11,10 @@ const routes = [
     path: '/',
     asyncComponent: () => import('./index'),
   },
+  {
+    path: '/lobby',
+    asyncComponent: () => import('./lobby'),
+  },
 ];
 
 function MyApp({ Component, pageProps }) {
@@ -18,7 +22,7 @@ function MyApp({ Component, pageProps }) {
   const url = `http://localhost:3000${router.asPath}`;
 
   return (
-    <App url={url} routes={routes} className="padding">
+    <App url={url} routes={routes}>
       <View
         main
         browserHistory
