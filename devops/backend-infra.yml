@@ -18,6 +18,8 @@ Parameters:
   Image:
     Type: String
     Default: 922586731243.dkr.ecr.us-east-1.amazonaws.com/dothidden
+  ImageTag:
+    Type: String
   ServiceName:
     Type: String
     Default: dothidden-games
@@ -41,28 +43,23 @@ Parameters:
     Default: 1
   MaxContainers:
     Type: Number
-    Default: 2 
+    Default: 1
   AutoScalingTargetValue:
     Type: Number
     Default: 50
 
 Resources:
 
-  EcrRepo:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: dothidden
-
   Cluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Join ['', [!Ref ServiceName, Cluster]]
+      ClusterName: !Join ['-', [!Ref ServiceName, Cluster]]
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     DependsOn: LogGroup
     Properties:
-      Family: !Join ['', [!Ref ServiceName, TaskDefinition]]
+      Family: !Join ['-', [!Ref ServiceName, TaskDefinition]]
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -72,7 +69,7 @@ Resources:
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: !Ref ServiceName
-          Image: !Ref Image
+          Image: !Join [':', [!Ref Image, !Ref ImageTag]]
           PortMappings:
             - ContainerPort: !Ref ContainerPort
           LogConfiguration:
@@ -85,7 +82,7 @@ Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join ['', [!Ref ServiceName, ExecutionRole]]
+      RoleName: !Join ['-', [!Ref ServiceName, ExecutionRole]]
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -98,7 +95,7 @@ Resources:
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join ['', [!Ref ServiceName, TaskRole]]
+      RoleName: !Join ['-', [!Ref ServiceName, TaskRole]]
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -109,7 +106,7 @@ Resources:
   AutoScalingRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join ['', [!Ref ServiceName, AutoScalingRole]]
+      RoleName: !Join ['-', [!Ref ServiceName, AutoScalingRole]]
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -122,7 +119,7 @@ Resources:
   ContainerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: !Join ['', [!Ref ServiceName, ContainerSecurityGroup]]
+      GroupDescription: !Join ['-', [!Ref ServiceName, ContainerSecurityGroup]]
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -133,7 +130,7 @@ Resources:
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: !Join ['', [!Ref ServiceName, LoadBalancerSecurityGroup]]
+      GroupDescription: !Join ['-', [!Ref ServiceName, LoadBalancerSecurityGroup]]
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -171,12 +168,12 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 10
+      HealthCheckIntervalSeconds: 300
       HealthCheckPath: !Ref HealthCheckPath
       HealthCheckTimeoutSeconds: 5
       UnhealthyThresholdCount: 2
       HealthyThresholdCount: 2
-      Name: !Join ['', [!Ref ServiceName, TargetGroup]]
+      Name: !Join ['-', [!Ref ServiceName, TargetGroup]]
       Port: !Ref ContainerPort
       Protocol: HTTP
       TargetGroupAttributes:
@@ -203,7 +200,7 @@ Resources:
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
           Value: 60
-      Name: !Join ['', [!Ref ServiceName, LoadBalancer]]
+      Name: !Join ['-', [!Ref ServiceName, LoadBalancer]]
       Scheme: internet-facing
       SecurityGroups:
         - !Ref LoadBalancerSecurityGroup
@@ -239,7 +236,7 @@ Resources:
   AutoScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
-      PolicyName: !Join ['', [!Ref ServiceName, AutoScalingPolicy]]
+      PolicyName: !Join ['-', [!Ref ServiceName, AutoScalingPolicy]]
       PolicyType: TargetTrackingScaling
       ScalingTargetId: !Ref AutoScalingTarget
       TargetTrackingScalingPolicyConfiguration:
