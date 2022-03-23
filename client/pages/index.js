@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   Row,
   Col,
@@ -12,15 +13,21 @@ import {
 export default function MainMenu() {
   const [username, setUsername] = useState('');
   const [session, setSession] = useState('');
+  const router = useRouter();
 
-  const joinSession = () => {
-    console.log(username);
+  const joinSession = (e) => {
+    e.preventDefault();
     console.log("Joining DotHidden session...");
+    console.log(router);
+    router.push('/lobby');
+
   };
 
-  const createSession = () => {
+  const createSession = (e) => {
+    e.preventDefault();
     console.log(username);
     console.log("Creating DotHidden session...");
+    router.push('/lobby');
   };
 
   return (
