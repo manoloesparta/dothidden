@@ -7,14 +7,12 @@ import {
   Button,
   List,
   ListInput,
-  Input,
-  ListButton,
 } from 'framework7-react';
 
 export default function MainMenu() {
   const [username, setUsername] = useState('');
   const [session, setSession] = useState('');
-  
+
   const joinSession = () => {
     console.log(username);
     console.log("Joining DotHidden session...");
@@ -24,7 +22,7 @@ export default function MainMenu() {
     console.log(username);
     console.log("Creating DotHidden session...");
   };
-  
+
   return (
     <Page noToolbar noNavbar noSwipeback loginScreen>
       <List>
@@ -51,7 +49,7 @@ export default function MainMenu() {
             setSession(e.target.value);
           }}
         />
-        
+
         <Row className="padding-horizontal margin-horizontal">
           <Col>
             <Button onClick={joinSession}>JOIN</Button>
