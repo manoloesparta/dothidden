@@ -1,22 +1,29 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import {
+  Row,
+  Col,
   Page,
   LoginScreenTitle,
+  Button,
   List,
   ListInput,
+  Input,
   ListButton,
-} from 'framework7-react'
+} from 'framework7-react';
 
 export default function MainMenu() {
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState('');
+  const [session, setSession] = useState('');
   
   const joinSession = () => {
-    console.log("Joining DotHidden session...")
+    console.log(username);
+    console.log("Joining DotHidden session...");
   };
 
   const createSession = () => {
-    console.log("Creating DotHidden session...")
-  }
+    console.log(username);
+    console.log("Creating DotHidden session...");
+  };
   
   return (
     <Page noToolbar noNavbar noSwipeback loginScreen>
@@ -26,25 +33,33 @@ export default function MainMenu() {
           DotHidden
         </LoginScreenTitle>
       </List>
+
       <List form>
-        <ListInput
-          className="padding-bottom"
+        <ListInput outline
           type="text"
-          placeholder="Session ID"
+          placeholder="Nickname"
           value={username}
           onInput={(e) => {
             setUsername(e.target.value);
           }}
         />
-        <ListButton onClick={joinSession}>JOIN</ListButton>
-      </List>
-
-      <div className="row margin-horizontal">
-        <hr className="col-33" />
-      </div>
-
-      <List>
-        <ListButton onClick={createSession}>CREATE</ListButton>
+        <ListInput outline
+          type="text"
+          placeholder="Session"
+          value={session}
+          onInput={(e) => {
+            setSession(e.target.value);
+          }}
+        />
+        
+        <Row className="padding-horizontal margin-horizontal">
+          <Col>
+            <Button onClick={joinSession}>JOIN</Button>
+          </Col>
+          <Col>
+            <Button onClick={createSession}>CREATE</Button>
+          </Col>
+        </Row>
       </List>
     </Page>
   );
