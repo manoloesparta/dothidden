@@ -30,6 +30,14 @@ class BadRequestException extends HttpExceptions {
   }
 }
 
+class ConflictException extends HttpExceptions {
+  constructor(message) {
+    super(message);
+    this.name = 'Conflict';
+    this.statusCode = 409;
+  }
+}
+
 class TeapotException extends HttpExceptions {
   constructor(message) {
     super(message);
@@ -51,5 +59,6 @@ module.exports = {
   TeapotException,
   BadRequestException,
   InternalServerErrorException,
+  ConflictException,
   HttpExceptions,
 };
