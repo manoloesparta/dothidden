@@ -1,4 +1,6 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');
 const morgan = require('morgan');
 
@@ -19,7 +21,14 @@ const createApp = () => {
 
   app.get('/health', (req, res) => res.sendStatus(200));
 
-  return app;
+  const server = http.createServer(app);
+  const io = new Server(server);
+
+  io.on('connection', (socket) => {
+    socket.on('update-location', undefined); // pending
+  });
+
+  return server;
 };
 
 module.exports = { createApp };
