@@ -1,8 +1,8 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
 const cors = require('cors');
 const morgan = require('morgan');
+const { Server } = require('socket.io');
 
 const { GameRoutes } = require('./game');
 const { PlayerRoutes } = require('./players');
