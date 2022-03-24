@@ -24,6 +24,7 @@ export default function Join(props) {
 		if (!validUsername())
 			return;
 		console.log(`'${username}' attempting to start DotHidden session...`);
+		session = 100000 + Math.floor(Math.random() * 800000);
 		f7router.navigate(`/lobby/${session}`);
 	};
 
