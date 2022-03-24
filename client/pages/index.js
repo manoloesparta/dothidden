@@ -12,10 +12,13 @@ export default function MainMenu(props) {
 	const { f7router } = props;
 
 	const [session, setSession] = useState("");
+	const validSession = () => {
+		return session.length >= 6;
+	};
 
 	const joinSession = (e) => {
 		e.preventDefault();
-		if (session.length < 6)
+		if (!validSession())
 			return;
 		console.log(`Attempting to join DotHidden session #${session}...`);
 		f7router.navigate(`lobby/${session}`);
@@ -48,7 +51,7 @@ export default function MainMenu(props) {
 					<input slot="input" type="text" placeholder="Game PIN" className="text-align-center" value={session} onChange={e => setSession(e.target.value)} />
 				</ListInput>
 
-				<Button className="margin-horizontal" disabled={session.length < 6} onClick={joinSession}>JOIN</Button>
+				<Button className="margin-horizontal" disabled={!validSession()} onClick={joinSession}>JOIN</Button>
 
 				<Row>
 					<hr className="col-15" />
