@@ -12,8 +12,8 @@ const routes = [
     asyncComponent: () => import("./index"),
   },
   {
-    path: "/lobby",
-    asyncComponent: () => import("./lobby"),
+    path: "/lobby/:session",
+    asyncComponent: () => import("./lobby/[session]"),
   },
 ];
 

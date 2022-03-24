@@ -11,9 +11,9 @@ import {
     Button,
 } from "framework7-react";
 
-export default function Lobby() {
-    const router = useRouter();
-    const { session } = router.query;
+export default function Lobby(props) {
+    console.log(props);
+    const { session, f7router } = props;
     const [isHost, setIsHost] = useState(true);
 
     const [username, setUsername] = useState("");

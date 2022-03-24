@@ -1,21 +1,24 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import {
-  Row,
-  Col,
   Page,
+  Row,
   LoginScreenTitle,
-  Button,
   List,
-  Input,
   ListInput,
+  Button,
+  Link
 } from "framework7-react";
 
-export default function MainMenu() {
+export default function MainMenu(props) {
+  const { f7router } = props;
   const [session, setSession] = useState("");
 
   const joinSession = (e) => {
     e.preventDefault();
     console.log(`Joining DotHidden session ${session}...`);
+    console.log(props);
+    f7router.navigate(`lobby/${session}`);
   };
 
   const createSession = (e) => {
@@ -43,14 +46,17 @@ export default function MainMenu() {
           <input slot="input" type="text" placeholder="Game PIN" className="text-align-center" value={session} onChange={e => setSession(e.target.value)} />
         </ListInput>
 
-
-        <Button className="margin-horizontal" href="lobby/" onClick={joinSession}>JOIN</Button>
+        <Button className="margin-horizontal" onClick={joinSession}>CREATE</Button>
+        {/* <Button className="margin-horizontal" onClick={() => router.push(`/lobby/${encodeURIComponent(session)}`)}>JOIN</Button> */}
+        {/* <Link href={`/lobby/${encodeURIComponent(session)}`} passHref>
+          <Button className="margin-horizontal">JOIN</Button>
+        </Link> */}
 
         <Row>
           <hr className="col-15" />
         </Row>
 
-        <Button className="margin-horizontal" href="lobby/" onClick={createSession}>CREATE</Button>
+        <Button className="margin-horizontal" href="lobby/[session]" onClick={createSession}>CREATE</Button>
       </List>
     </Page>
   );
