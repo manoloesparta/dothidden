@@ -1,38 +1,36 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import {
     Page,
-    Button,
-    List,
-    Fab,
     Navbar,
+    NavLeft,
     NavTitle,
+    NavRight,
+    List,
     ListItem,
+    Button,
 } from "framework7-react";
 
-export default function MainMenu() {
-    const [isHost, setIsHost] = useState(false);
+export default function Lobby() {
+    const router = useRouter();
+    const { session } = router.query;
+    const [isHost, setIsHost] = useState(true);
 
     const [username, setUsername] = useState("");
-    const [session, setSession] = useState("123");
+    // const [session, setSession] = useState("");
 
     const [users, setUsers] = useState(Array.from(Array(100).keys()));
-
-    const joinSession = () => {
-        console.log(username);
-        console.log("Joining DotHidden session...");
-    };
-
-    const createSession = () => {
-        console.log(username);
-        console.log("Creating DotHidden session...");
-    };
 
     return (
         <Page noSwipeback>
             <Navbar>
-                <NavTitle>
-                    {session}
+                <NavTitle className="text-align-center">
+                    DotHidden #{session}
                 </NavTitle>
+
+                <NavRight>
+                    <Button color="red">{isHost ? "CLOSE" : "LEAVE"}</Button>
+                </NavRight>
             </Navbar>
 
             <List simpleList className="no-margin">
@@ -46,9 +44,6 @@ export default function MainMenu() {
                     </ListItem>
                 ))}
             </List>
-
-            <Fab position="center-bottom" slot="fixed" text="CLOSE" color="red" className="fab" />
-            <Fab position="center-bottom" slot="fixed" text="LEAVE" color="red" className="fab" />
         </Page >
     );
 }
