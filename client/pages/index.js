@@ -1,29 +1,31 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
 import {
   Page,
   Row,
   LoginScreenTitle,
   List,
   ListInput,
-  Button,
-  Link
+  Button
 } from "framework7-react";
 
 export default function MainMenu(props) {
   const { f7router } = props;
+
   const [session, setSession] = useState("");
 
   const joinSession = (e) => {
     e.preventDefault();
-    console.log(`Joining DotHidden session ${session}...`);
-    console.log(props);
+    if (session.length < 6)
+      return;
+    console.log(`Attempting to join DotHidden session #${session}...`);
     f7router.navigate(`lobby/${session}`);
   };
 
   const createSession = (e) => {
     e.preventDefault();
     console.log("Creating DotHidden session...");
+    // TODO
+    // f7router.navigate("lobby/");
   };
 
   return (
@@ -35,7 +37,7 @@ export default function MainMenu(props) {
         </LoginScreenTitle>
       </List>
 
-      <List form className="padding-horizontal">
+      <List form onSubmit={joinSession} className="padding-horizontal">
         <ListInput outline
           value={session}
           onInput={(e) => {
@@ -46,17 +48,13 @@ export default function MainMenu(props) {
           <input slot="input" type="text" placeholder="Game PIN" className="text-align-center" value={session} onChange={e => setSession(e.target.value)} />
         </ListInput>
 
-        <Button className="margin-horizontal" onClick={joinSession}>CREATE</Button>
-        {/* <Button className="margin-horizontal" onClick={() => router.push(`/lobby/${encodeURIComponent(session)}`)}>JOIN</Button> */}
-        {/* <Link href={`/lobby/${encodeURIComponent(session)}`} passHref>
-          <Button className="margin-horizontal">JOIN</Button>
-        </Link> */}
+        <Button className="margin-horizontal" disabled={session.length < 6} onClick={joinSession}>JOIN</Button>
 
         <Row>
           <hr className="col-15" />
         </Row>
 
-        <Button className="margin-horizontal" href="lobby/[session]" onClick={createSession}>CREATE</Button>
+        <Button className="margin-horizontal" onClick={createSession}>CREATE</Button>
       </List>
     </Page>
   );
