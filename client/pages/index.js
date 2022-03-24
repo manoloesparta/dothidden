@@ -21,14 +21,21 @@ export default function MainMenu(props) {
 		if (!validSession())
 			return;
 		console.log(`Attempting to join DotHidden session #${session}...`);
-		f7router.navigate(`lobby/${session}`);
+		f7router.navigate("/join", {
+			props: {
+				session: session
+			}
+		});
 	};
 
 	const createSession = (e) => {
 		e.preventDefault();
 		console.log("Creating DotHidden session...");
-		// TODO
-		// f7router.navigate("lobby/");
+		f7router.navigate("/join", {
+			props: {
+				session: null
+			}
+		});
 	};
 
 	return (

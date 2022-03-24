@@ -12,6 +12,10 @@ import {
 export default function Lobby(props) {
 	const { f7router, session } = props;
 
+	if (session === undefined) {
+		f7router.navigate("/");
+	}
+
 	const [isHost, setIsHost] = useState(true);
 	const [self, setSelf] = useState("");
 	const [users, setUsers] = useState(Array.from(Array(100).keys()));
