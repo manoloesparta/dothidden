@@ -8,12 +8,12 @@ Framework7.use(Framework7React);
 
 const routes = [
   {
-    path: '/',
-    asyncComponent: () => import('./index'),
+    path: "/",
+    asyncComponent: () => import("./index"),
   },
   {
-    path: '/lobby',
-    asyncComponent: () => import('./lobby'),
+    path: "/lobby",
+    asyncComponent: () => import("./lobby"),
   },
 ];
 
