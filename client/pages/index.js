@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useState } from "react";
 import {
   Row,
   Col,
@@ -7,64 +6,51 @@ import {
   LoginScreenTitle,
   Button,
   List,
+  Input,
   ListInput,
-} from 'framework7-react';
+} from "framework7-react";
 
 export default function MainMenu() {
-  const [username, setUsername] = useState('');
-  const [session, setSession] = useState('');
-  const router = useRouter();
+  const [session, setSession] = useState("");
 
   const joinSession = (e) => {
     e.preventDefault();
-    console.log("Joining DotHidden session...");
-    console.log(router);
-    router.push('/lobby');
-
+    console.log(`Joining DotHidden session ${session}...`);
   };
 
   const createSession = (e) => {
     e.preventDefault();
-    console.log(username);
     console.log("Creating DotHidden session...");
-    router.push('/lobby');
   };
 
   return (
-    <Page noToolbar noNavbar noSwipeback loginScreen>
-      <List>
+    <Page noToolbar noNavbar noSwipeback loginScreen className="padding">
+      <List className="padding">
         <img src="/vercel.svg" alt="" className="page-content display-flex flex-direction-column justify-content-center" />
         <LoginScreenTitle>
           DotHidden
         </LoginScreenTitle>
       </List>
 
-      <List form>
+      <List form className="padding-horizontal">
         <ListInput outline
-          type="text"
-          placeholder="Nickname"
-          value={username}
-          onInput={(e) => {
-            setUsername(e.target.value);
-          }}
-        />
-        <ListInput outline
-          type="text"
-          placeholder="Session"
           value={session}
           onInput={(e) => {
             setSession(e.target.value);
           }}
-        />
+          input={false}
+        >
+          <input slot="input" type="text" placeholder="Game PIN" className="text-align-center" value={session} onChange={e => setSession(e.target.value)} />
+        </ListInput>
 
-        <Row className="padding-horizontal margin-horizontal">
-          <Col>
-            <Button onClick={joinSession}>JOIN</Button>
-          </Col>
-          <Col>
-            <Button onClick={createSession}>CREATE</Button>
-          </Col>
+
+        <Button className="margin-horizontal" href="lobby/" onClick={joinSession}>JOIN</Button>
+
+        <Row>
+          <hr className="col-15" />
         </Row>
+
+        <Button className="margin-horizontal" href="lobby/" onClick={createSession}>CREATE</Button>
       </List>
     </Page>
   );
