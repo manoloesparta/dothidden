@@ -2,6 +2,14 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "semi": 2,
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "jsx-quotes": [
+      "error",
+      "prefer-double"
+    ],
     "@next/next/no-img-element": 0
   },
   "settings": {
