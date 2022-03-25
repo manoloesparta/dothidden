@@ -40,7 +40,8 @@ router.get('/game/:gameId/players', (req, res) => {
   try {
     const { gameId } = req.params;
     const game = currentGames.getGame(gameId);
-    res.json(game.players);
+    const gamePlayers = game.players.map(x = x.name);
+    res.status(200).send({gamePlayers});
   } catch (error) {
     console.error(error);
     if (error instanceof HttpExceptions) {
