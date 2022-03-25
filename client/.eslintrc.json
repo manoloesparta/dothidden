@@ -1,7 +1,20 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "@next/next/no-img-element": "off"
+    "indent": [
+      "error",
+      "tab"
+    ],
+    "semi": 2,
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "jsx-quotes": [
+      "error",
+      "prefer-double"
+    ],
+    "@next/next/no-img-element": 0
   },
   "settings": {
     "next": {
