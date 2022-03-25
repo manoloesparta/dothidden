@@ -13,7 +13,6 @@ class GameManager {
       gameId = randString(5);
     }
     this.games[gameId] = new Game(gameId, host);
-    this.games[gameId].addPlayer(host);
     return gameId;
   }
 
