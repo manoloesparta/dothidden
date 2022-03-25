@@ -13,7 +13,7 @@ export default function MainMenu(props) {
 
 	const [session, setSession] = useState("");
 	const validSession = () => {
-		return session.length == 6 && /^[a-z0-9]+$/i.test(session);
+		return session.length == 5 && /^[a-z0-9]+$/i.test(session);
 	};
 
 	const joinSession = (e) => {
