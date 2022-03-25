@@ -16,7 +16,7 @@ export default function Lobby(props) {
 		f7router.navigate("/");
 	}
 
-	const [users, setUsers] = useState(Array.from(Array(100).keys()));
+	const [users, setUsers] = useState([]);
 
 	const closeSession = (e) => {
 		e.preventDefault();
@@ -33,12 +33,12 @@ export default function Lobby(props) {
 
 	useEffect(() => {
 		async function getUsers() {
-			let response = await fetch(`http://localhost:8080/game/${session}/players`);
+			let response = await fetch(`https://api.hidenseek.manoloesparta.com/game/${session}/players`);
 			
 			if (response.status === 200) {
 				let json_response = await response.json();
-				console.log(json_response);
-				setUsers(json_response || []);
+				console.log(json_response.names);
+				setUsers(json_response.names || []);
 			}
 		};
 		getUsers();
@@ -58,7 +58,7 @@ export default function Lobby(props) {
 
 			<List simpleList className="no-margin">
 				{users.map((user, index) => (
-					<ListItem key={index} title={user.name}>
+					<ListItem key={index} title={user}>
 						<div className="item-after">
 							{isHost &&
                                 <Button outline color="red" onClick={(e) => kickUser(e, user)}>Kick</Button>
