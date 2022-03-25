@@ -12,14 +12,14 @@ const format = '[:date[clf]] ":method :url" :status - ":user-agent"';
 const createApp = () => {
   const app = express();
 
-  app.use(express.json());
+  app.get('/health', (req, res) => res.sendStatus(200));
+
   app.use(cors());
+  app.use(express.json());
   app.use(morgan(format));
 
   app.use(GameRoutes);
   app.use(PlayerRoutes);
-
-  app.get('/health', (req, res) => res.sendStatus(200));
 
   const server = http.createServer(app);
   const io = new Server(server);
