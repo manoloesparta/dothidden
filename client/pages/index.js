@@ -41,9 +41,11 @@ export default function MainMenu(props) {
 	return (
 		<Page noToolbar noNavbar noSwipeback loginScreen className="padding">
 			<List className="padding">
-				<img src="/vercel.svg" alt="" className="page-content display-flex flex-direction-column justify-content-center" />
+				<Row className="justify-content-center">
+					<img src="/dot_hidden.svg" alt="" width="256" />
+				</Row>
 				<LoginScreenTitle>
-          DotHidden
+					DotHidden
 				</LoginScreenTitle>
 			</List>
 
@@ -61,7 +63,7 @@ export default function MainMenu(props) {
 				<Button className="margin-horizontal" disabled={!validSession()} onClick={joinSession}>JOIN</Button>
 
 				<Row>
-					<hr className="col-15" />
+					<hr className="col-66" />
 				</Row>
 
 				<Button className="margin-horizontal" onClick={createSession}>CREATE</Button>

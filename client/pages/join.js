@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
 	Page,
+	Row,
 	LoginScreenTitle,
 	List,
 	ListInput,
@@ -31,7 +32,9 @@ export default function Join(props) {
 	return (
 		<Page noToolbar noNavbar noSwipeback loginScreen>
 			<List className="padding">
-				<img src="/vercel.svg" alt="" className="page-content display-flex flex-direction-column justify-content-center" />
+				<Row className="justify-content-center">
+					<img src="/dot_hidden.svg" alt="" width="192" />
+				</Row>
 				<LoginScreenTitle>
                     DotHidden
 				</LoginScreenTitle>
