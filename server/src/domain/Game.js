@@ -6,6 +6,7 @@ class Game {
     this.gameId = gameId;
     this.host = host;
     this.players = [];
+    this.addPlayer(host)
   }
 
   addPlayer(player) {
