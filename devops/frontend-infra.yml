@@ -64,7 +64,7 @@ Resources:
                 baseDirectory: out
               cache:
                 paths:
-                    - node_modules/**/*
+                  - node_modules/**/*
       IAMServiceRole: !GetAtt AmplifyRole.Arn
 
   MainBranch:
