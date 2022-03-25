@@ -24,8 +24,8 @@ const logger = {
   error: (error) => console.error(JSON.stringify(error.stack)),
   info: (msg) => console.info(msg),
   debug: (msg) => console.debug(msg),
-}
+};
 
 module.exports = {
-  randInt, randString, checkPathParams, checkBody, logger
+  randInt, randString, checkPathParams, checkBody, logger,
 };

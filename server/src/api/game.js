@@ -8,11 +8,11 @@ const router = express.Router();
 
 router.post('/game', (req, res) => {
   try {
-    checkBody(req, 'host')
+    checkBody(req, 'host');
     const gameId = currentGames.createGame(req.body.host);
     res.status(200).send({ code: gameId });
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     if (error instanceof HttpExceptions) {
       res.status(error.statusCode).send({ message: error.message });
     } else {
