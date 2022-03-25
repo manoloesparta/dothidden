@@ -13,7 +13,7 @@ export default function MainMenu(props) {
 
 	const [session, setSession] = useState("");
 	const validSession = () => {
-		return session.length >= 6;
+		return session.length == 6 && /^[a-z0-9]+$/i.test(session);
 	};
 
 	const joinSession = (e) => {
@@ -23,7 +23,7 @@ export default function MainMenu(props) {
 		console.log(`Attempting to join DotHidden session #${session}...`);
 		f7router.navigate("/join", {
 			props: {
-				session: session
+				session: session.toUpperCase()
 			}
 		});
 	};
