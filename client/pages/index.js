@@ -23,6 +23,7 @@ export default function MainMenu(props) {
 		console.log(`Attempting to join DotHidden session #${session}...`);
 		f7router.navigate("/join", {
 			props: {
+				isHost: false,
 				session: session.toUpperCase()
 			}
 		});
@@ -33,6 +34,7 @@ export default function MainMenu(props) {
 		console.log("Creating DotHidden session...");
 		f7router.navigate("/join", {
 			props: {
+				isHost: true,
 				session: null
 			}
 		});
