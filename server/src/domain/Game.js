@@ -6,15 +6,15 @@ class Game {
     this.gameId = gameId;
     this.host = host;
     this.players = [];
-    this.addPlayer(host)
+    this.addPlayer(host);
   }
 
   addPlayer(player) {
     this.players.forEach((user) => {
-      if(user.name == player) {
+      if (user.name === player) {
         throw new ConflictException('Player nickname already in use');
       }
-    })
+    });
     return this.players.push(new Player(player, 0, 0));
   }
 
