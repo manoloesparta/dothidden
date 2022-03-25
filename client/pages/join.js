@@ -17,7 +17,7 @@ export default function Join(props) {
 
 	const [username, setUsername] = useState("");
 	const validUsername = function () {
-		return username.length > 3;
+		return username.length >= 3;
 	};
 	
 	const joinSession = (e) => {
