@@ -6,6 +6,7 @@ Parameters:
   Repository:
     Type: String
     Description: GitHub repository URL
+    Default: https://github.com/manoloesparta/dothidden
 
   OauthToken:
     Type: String
@@ -15,6 +16,7 @@ Parameters:
   Domain:
     Type: String
     Description: Domain name for application
+    Default: hidenseek.manoloesparta.com
 
 Resources:
 
