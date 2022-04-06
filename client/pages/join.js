@@ -28,19 +28,20 @@ export default function Join(props) {
 		console.log(`'${username}' attempting to start DotHidden session...`);
 
 		if (session === null) {
-			let response = await fetch("http://localhost:8080/game", {
+			let response = await fetch("https://api.hidenseek.manoloesparta.com/game", {
 				method: "POST",
+				headers : {"Content-Type": "application/json"},
 				body: JSON.stringify({
 					host: username
 				})
 			});
-			
 			if (response.status === 200) {
 				let json_response = await response.json();
+				console.log(json_response);
 				session = json_response.code || null;
 			}
 		} else {
-			let response = await fetch(`http://localhost:8080/game/${session}/players/${username}`, {
+			let response = await fetch(`https://api.hidenseek.manoloesparta.com/game/${session}/players/${username}`, {
 				method: "POST"
 			});
 			
