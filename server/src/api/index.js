@@ -2,15 +2,16 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const morgan = require('morgan');
-const { Server } = require('socket.io');
 
 const { GameRoutes } = require('./game');
 const { PlayerRoutes } = require('./players');
+const { SocketService } = require('../sockets');
 
 const format = '[:date[clf]] ":method :url" :status - ":user-agent"';
 
 const createApp = () => {
   const app = express();
+  const server = http.createServer(app);
 
   app.get('/health', (req, res) => res.sendStatus(200));
 
@@ -21,12 +22,7 @@ const createApp = () => {
   app.use(GameRoutes);
   app.use(PlayerRoutes);
 
-  const server = http.createServer(app);
-  const io = new Server(server);
-
-  io.on('connection', (socket) => {
-    socket.on('update-location', undefined); // pending
-  });
+  app.set('socketService', new SocketService(server));
 
   return server;
 };
