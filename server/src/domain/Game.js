@@ -9,6 +9,10 @@ class Game {
     this.addPlayer(host);
   }
 
+  getPlayerNames() {
+    return this.players.map((player) => player.name);
+  }
+
   addPlayer(player) {
     this.players.forEach((user) => {
       if (user.name === player) {
