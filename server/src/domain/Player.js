@@ -4,6 +4,17 @@ class Player {
     this.x = x;
     this.y = y;
   }
+
+  proximity(player) {
+    const first = (player.x - this.x) ** 2;
+    const second = (player.y - this.y) ** 2;
+    return Math.sqrt(first + second);
+  }
+
+  moveTo(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 }
 
 class Hider extends Player {
@@ -20,6 +31,10 @@ class Hider extends Player {
     }
     console.log(`${this.name}: Seeker is ${distance.toFixed(2)}m away`);
   }
+
+  static fromPlayer(player) {
+    return Hider(player.name, player.x, player.y);
+  }
 }
 
 class Seeker extends Player {
@@ -28,6 +43,10 @@ class Seeker extends Player {
     hiders
       .map((hider) => this.proximity(hider).toFixed(2))
       .map((distance, index) => console.log(`${this.name}: Hider${encode(index)} is ${distance}m away`));
+  }
+
+  static fromPlayer(player) {
+    return Seeker(player.name, player.x, player.y);
   }
 }
 

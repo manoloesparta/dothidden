@@ -1,5 +1,5 @@
 const express = require('express');
-const { currentGames } = require('../domain/GameManager');
+const { currentLobbies } = require('../domain/LobbyManager');
 const { HttpExceptions } = require('../utils/exceptions');
 const { logger, checkPathParams } = require('../utils/utils');
 
@@ -11,10 +11,10 @@ router.post('/game/:gameId/players/:playerNick', (req, res) => {
     checkPathParams(req, 'gameId', 'playerNick');
 
     const { gameId, playerNick } = req.params;
-    const game = currentGames.getGame(gameId);
-    game.addPlayer(playerNick);
+    const lobby = currentLobbies.getLobby(gameId);
+    lobby.addPlayer(playerNick);
 
-    io.emit('lobby.update', { names: game.getPlayerNames() });
+    io.emit('lobby.update', { names: lobby.getPlayerNames() });
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -32,10 +32,10 @@ router.delete('/game/:gameId/players/:playerNick', (req, res) => {
     checkPathParams(req, 'gameId', 'playerNick');
 
     const { gameId, playerNick } = req.params;
-    const game = currentGames.getGame(gameId);
-    game.removePlayer(playerNick);
+    const lobby = currentLobbies.getLobby(gameId);
+    lobby.removePlayer(playerNick);
 
-    io.emit('lobby.update', { names: game.getPlayerNames() });
+    io.emit('lobby.update', { names: lobby.getPlayerNames() });
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -52,9 +52,9 @@ router.get('/game/:gameId/players', (req, res) => {
     checkPathParams(req, 'gameId');
 
     const { gameId } = req.params;
-    const game = currentGames.getGame(gameId);
+    const lobby = currentLobbies.getLobby(gameId);
 
-    res.status(200).send({ names: game.getPlayerNames() });
+    res.status(200).send({ names: lobby.getPlayerNames() });
   } catch (error) {
     logger.error(error);
     if (error instanceof HttpExceptions) {
