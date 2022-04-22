@@ -75,6 +75,8 @@ export default {
 
       this.joining_lobby = true;
 
+      this.$router.push("/lobby");
+
       this.error = "Lobby ID doesn't exist!";
       this.joining_lobby = false;
     },
@@ -84,6 +86,8 @@ export default {
       console.log(`Creating lobby...`);
 
       this.creating_lobby = true;
+
+      this.$router.push("/lobby");
 
       this.error = "Couldn't create lobby!";
       this.creating_lobby = false;
