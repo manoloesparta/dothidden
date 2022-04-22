@@ -30,4 +30,4 @@ class Lobby {
   }
 }
 
-exports.module = { Lobby };
+module.exports = { Lobby };
