@@ -44,24 +44,40 @@
     >
       Start Game
     </button>
+
+    <UsernameModal />
   </main>
 </template>
 
 <script>
+import bootstrap from "bootstrap/dist/js/bootstrap.min.js";
+
+import UsernameModal from "../components/UsernameModal";
+
 export default {
   name: "LobbyView",
+  components: { UsernameModal },
   data() {
     return {
       error: "",
       starting_game: false,
       kicking_user: false,
 
+      usernameModal: undefined,
+
       lobby_id: "",
+      user: "",
       users: [],
     };
   },
   mounted() {
     this.lobby_id = this.$route.params.lobby_id || "";
+
+    this.usernameModal = new bootstrap.Modal(
+      document.getElementById("UsernameModal")
+    );
+
+    if (this.user.length == 0) this.usernameModal.show();
   },
   computed: {
     isBusy() {

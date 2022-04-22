@@ -7,7 +7,7 @@
       <div class="form-floating">
         <input
           type="text"
-          class="mb-2 form-control text-center"
+          class="mb-2 form-control"
           id="lobbyIdInput"
           placeholder="Lobby ID"
           v-model="lobby_id"
