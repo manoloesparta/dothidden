@@ -17,7 +17,7 @@
     </nav>
 
     <div class="card w-100" style="width: 18rem">
-      <div class="card-header">Username</div>
+      <div class="card-header">{{ user }}</div>
 
       <ul class="list-group list-group-flush">
         <li v-for="i in 100" :key="i" class="list-group-item d-flex">
@@ -45,7 +45,7 @@
       Start Game
     </button>
 
-    <UsernameModal />
+    <UsernameModal :isHost="isHost" @entered="joinLobby" />
   </main>
 </template>
 
@@ -71,34 +71,44 @@ export default {
 
       usernameModal: undefined,
 
-      lobby_id: "",
+      lobby_id: this.$route.params.lobby_id || "",
       user: "",
       users: [],
     };
   },
   mounted() {
-    this.lobby_id = this.$route.params.lobby_id || "";
-
     this.usernameModal = new bootstrap.Modal(
       document.getElementById("UsernameModal")
     );
 
-    if (this.user.length == 0) this.usernameModal.show();
+    if (this.user.length == 0) {
+      if (this.lobby_id.length !== 6 && !this.isHost) {
+        this.$router.push("/");
+      } else {
+        this.usernameModal.show();
+      }
+    }
   },
   computed: {
     isBusy() {
       return this.starting_game || this.kicking_user;
     },
-    isHost() {
-      return true;
-    },
   },
   methods: {
+    joinLobby(username) {
+      if (username.length <= 3) return;
+
+      console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
+
+      this.user = username;
+      this.usernameModal.hide();
+      this.$router.push(`/lobby/A123B6`);
+    },
     closeLobby() {
       if (this.isHost) {
-        console.log(`Closing lobby ${this.lobby_id}...`);
+        console.log(`Closing lobby #${this.lobby_id}...`);
       } else {
-        console.log(`Leaving lobby ${this.lobby_id}...`);
+        console.log(`Leaving lobby #${this.lobby_id}...`);
       }
 
       this.$router.push(`/`);
@@ -106,7 +116,7 @@ export default {
     kickUser(user) {
       if (!this.isHost) return;
 
-      console.log(`Kicking user ${user} from lobby ${this.lobby_id}...`);
+      console.log(`Kicking user ${user} from lobby #${this.lobby_id}...`);
 
       this.kicking_user = true;
 
@@ -116,7 +126,7 @@ export default {
     startGame() {
       if (!this.isHost) return;
 
-      console.log(`Starting game for lobby ${this.lobby_id}...`);
+      console.log(`Starting game for lobby #${this.lobby_id}...`);
 
       this.starting_game = true;
 
