@@ -16,7 +16,7 @@
       </div>
 
       <button
-        :disabled="!isLobbyValid"
+        :disabled="!isLobbyValid || isBusy"
         @click="joinLobby"
         class="w-100 btn btn-primary"
       >
@@ -27,7 +27,11 @@
         <hr />
       </div>
 
-      <button @click="createLobby" class="w-100 btn btn-primary">
+      <button
+        :disabled="isBusy"
+        @click="createLobby"
+        class="w-100 btn btn-primary"
+      >
         Create Lobby
       </button>
 
@@ -42,19 +46,32 @@ export default {
   data() {
     return {
       lobby_id: "",
+      joining_lobby: false,
+      creating_lobby: false,
     };
   },
   computed: {
+    isBusy() {
+      return this.joining_lobby || this.creating_lobby;
+    },
     isLobbyValid() {
       return this.lobby_id.length == 6;
     },
   },
   methods: {
     joinLobby() {
+      if (this.isBusy) return;
+
       console.log(`Joining lobby #${this.lobby_id}...`);
+
+      this.joining_lobby = true;
     },
     createLobby() {
+      if (this.isBusy) return;
+
       console.log(`Creating lobby...`);
+
+      this.creating_lobby = true;
     },
   },
 };
