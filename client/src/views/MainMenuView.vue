@@ -88,7 +88,10 @@ export default {
 
       this.creating_lobby = true;
 
-      this.$router.push("/lobby");
+      this.$router.push({
+        name: "lobby",
+        params: { isHost: true },
+      });
 
       this.error = "Couldn't create lobby!";
       this.creating_lobby = false;

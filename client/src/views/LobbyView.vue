@@ -57,6 +57,12 @@ import UsernameModal from "../components/UsernameModal";
 export default {
   name: "LobbyView",
   components: { UsernameModal },
+  props: {
+    isHost: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       error: "",
