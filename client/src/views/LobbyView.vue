@@ -4,8 +4,13 @@
       <div class="container-fluid">
         <a class="navbar-brand">DotHidden #{{ lobby_id }}</a>
         <div class="d-flex">
-          <button type="button" class="btn btn-danger">
-            {{ isHost ? "CLOSE" : "LEAVE" }}
+          <button
+            :disabled="isBusy"
+            @click="closeLobby"
+            type="button"
+            class="btn btn-danger"
+          >
+            {{ isHost ? "Close" : "Leave" }}
           </button>
         </div>
       </div>
@@ -18,14 +23,22 @@
         <li v-for="i in 100" :key="i" class="list-group-item d-flex">
           <span class="my-auto">Username</span>
           <div v-if="isHost" class="ms-auto">
-            <button type="button" class="btn btn-sm btn-danger">KICK</button>
+            <button
+              :disabled="isBusy"
+              @click="kickUser(i)"
+              type="button"
+              class="btn btn-sm btn-danger"
+            >
+              KICK
+            </button>
           </div>
         </li>
       </ul>
     </div>
 
     <button
-      disabled="true"
+      :disabled="isBusy"
+      @click="startGame"
       type="button"
       class="btn btn-secondary btn-lg my-2 position-fixed bottom-0 start-50 translate-middle-x"
     >
@@ -39,17 +52,55 @@ export default {
   name: "LobbyView",
   data() {
     return {
+      error: "",
+      starting_game: false,
+      kicking_user: false,
+
       lobby_id: "",
+      users: [],
     };
   },
+  mounted() {
+    this.lobby_id = this.$route.params.lobby_id || "";
+  },
   computed: {
+    isBusy() {
+      return this.starting_game || this.kicking_user;
+    },
     isHost() {
       return true;
     },
   },
-  mounted() {
-    console.log(this.$route.params);
-    this.lobby_id = this.$route.params.lobby_id || "";
+  methods: {
+    closeLobby() {
+      if (this.isHost) {
+        console.log(`Closing lobby ${this.lobby_id}...`);
+      } else {
+        console.log(`Leaving lobby ${this.lobby_id}...`);
+      }
+
+      this.$router.push(`/`);
+    },
+    kickUser(user) {
+      if (!this.isHost) return;
+
+      console.log(`Kicking user ${user} from lobby ${this.lobby_id}...`);
+
+      this.kicking_user = true;
+
+      this.error = "Couldn't kick user!";
+      this.kicking_user = false;
+    },
+    startGame() {
+      if (!this.isHost) return;
+
+      console.log(`Starting game for lobby ${this.lobby_id}...`);
+
+      this.starting_game = true;
+
+      this.error = "Couldn't start game!";
+      this.starting_game = false;
+    },
   },
 };
 </script>
