@@ -35,6 +35,14 @@
         Create Lobby
       </button>
 
+      <div
+        v-if="error.length > 0"
+        class="m-2 p-1 alert alert-danger"
+        role="alert"
+      >
+        {{ error }}
+      </div>
+
       <p class="mt-5 mb-3 text-muted">© 2021</p>
     </form>
   </main>
@@ -45,6 +53,7 @@ export default {
   name: "MainMenu",
   data() {
     return {
+      error: "",
       lobby_id: "",
       joining_lobby: false,
       creating_lobby: false,
@@ -65,6 +74,9 @@ export default {
       console.log(`Joining lobby #${this.lobby_id}...`);
 
       this.joining_lobby = true;
+
+      this.error = "Lobby ID doesn't exist!";
+      this.joining_lobby = false;
     },
     createLobby() {
       if (this.isBusy) return;
@@ -72,6 +84,9 @@ export default {
       console.log(`Creating lobby...`);
 
       this.creating_lobby = true;
+
+      this.error = "Couldn't create lobby!";
+      this.creating_lobby = false;
     },
   },
 };
