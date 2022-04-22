@@ -1,36 +1,27 @@
 <template>
   <main class="main-menu d-flex flex-column justify-content-center">
     <form class="m-5 text-center">
-      <img class="mb-4" src="../assets/dothidden.svg" alt="" width="128" />
-      <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+      <img class="mb-4" src="../assets/dothidden.svg" alt="" width="198" />
+      <h1 class="h3 mb-3 fw-normal">DotHidden</h1>
 
       <div class="form-floating">
         <input
-          type="email"
-          class="form-control"
-          id="floatingInput"
-          placeholder="name@example.com"
+          type="text"
+          class="mb-2 form-control text-center"
+          id="lobbyIdInput"
+          placeholder="Lobby ID"
         />
-        <label for="floatingInput">Email address</label>
+        <label for="lobbyIdInput" center="text-center">Lobby ID</label>
       </div>
-      <div class="form-floating">
-        <input
-          type="password"
-          class="form-control"
-          id="floatingPassword"
-          placeholder="Password"
-        />
-        <label for="floatingPassword">Password</label>
-      </div>
+
+      <button class="w-100 btn btn-primary" type="submit">JOIN</button>
 
       <div class="checkbox mb-3">
-        <label>
-          <input type="checkbox" value="remember-me" /> Remember me
-        </label>
+        <hr />
       </div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit">
-        Sign in
-      </button>
+
+      <button class="w-100 btn btn-primary" type="submit">CREATE</button>
+
       <p class="mt-5 mb-3 text-muted">© 2017–2021</p>
     </form>
   </main>
