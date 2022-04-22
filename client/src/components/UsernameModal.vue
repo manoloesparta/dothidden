@@ -17,11 +17,17 @@
               class="mb-2 form-control text-center"
               id="usernameInput"
               placeholder="Username"
+              v-model="username"
             />
             <label for="usernameInput">Username</label>
           </div>
 
-          <button class="w-100 btn btn-primary">Join</button>
+          <button
+            @click="$emit('entered', username)"
+            class="w-100 btn btn-primary"
+          >
+            {{ isHost ? "Create Lobby" : "Join Lobby" }}
+          </button>
         </div>
       </div>
     </div>
@@ -31,5 +37,17 @@
 <script>
 export default {
   name: "UsernameModal",
+  emits: ["entered"],
+  props: {
+    isHost: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      username: "",
+    };
+  },
 };
 </script>
