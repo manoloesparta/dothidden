@@ -102,7 +102,11 @@ export default {
 
       this.user = username;
       this.usernameModal.hide();
-      this.$router.push(`/lobby/A123B6`);
+
+      this.$router.push({
+        name: "/lobby/A123B6",
+        params: { isHost: this.isHost },
+      });
     },
     closeLobby() {
       if (this.isHost) {

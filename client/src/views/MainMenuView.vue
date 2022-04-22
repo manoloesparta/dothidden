@@ -1,6 +1,6 @@
 <template>
   <main class="main-menu d-flex flex-column justify-content-center">
-    <form v-on:submit.prevent class="m-5 text-center">
+    <form v-on:submit.prevent class="m-5 mx-sm-auto text-center">
       <img class="mb-4" src="../assets/dothidden.svg" alt="" width="198" />
       <h1 class="h3 mb-3 fw-normal">DotHidden</h1>
 
