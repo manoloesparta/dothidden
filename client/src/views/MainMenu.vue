@@ -15,7 +15,13 @@
         <label for="lobbyIdInput">Lobby ID</label>
       </div>
 
-      <button @click="joinLobby" class="w-100 btn btn-primary">Join</button>
+      <button
+        :disabled="!isLobbyValid"
+        @click="joinLobby"
+        class="w-100 btn btn-primary"
+      >
+        Join
+      </button>
 
       <div class="checkbox mb-3">
         <hr />
@@ -37,6 +43,11 @@ export default {
     return {
       lobby_id: "",
     };
+  },
+  computed: {
+    isLobbyValid() {
+      return this.lobby_id.length == 6;
+    },
   },
   methods: {
     joinLobby() {
