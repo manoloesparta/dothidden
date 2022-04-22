@@ -54,9 +54,10 @@ export default {
   data() {
     return {
       error: "",
-      lobby_id: "",
       joining_lobby: false,
       creating_lobby: false,
+
+      lobby_id: "",
     };
   },
   computed: {
@@ -75,7 +76,7 @@ export default {
 
       this.joining_lobby = true;
 
-      this.$router.push("/lobby");
+      this.$router.push(`/lobby/${this.lobby_id}`);
 
       this.error = "Lobby ID doesn't exist!";
       this.joining_lobby = false;
