@@ -23,6 +23,14 @@
         </li>
       </ul>
     </div>
+
+    <button
+      disabled="true"
+      type="button"
+      class="btn btn-secondary btn-lg my-2 position-fixed bottom-0 start-50 translate-middle-x"
+    >
+      Start Game
+    </button>
   </main>
 </template>
 
