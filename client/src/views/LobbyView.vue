@@ -20,17 +20,23 @@
       <div class="card-header">{{ user }}</div>
 
       <ul class="list-group list-group-flush">
-        <li v-for="i in 100" :key="i" class="list-group-item d-flex">
-          <span class="my-auto">Username</span>
-          <div v-if="isHost" class="ms-auto">
-            <button
-              :disabled="isBusy"
-              @click="kickUser(i)"
-              type="button"
-              class="btn btn-sm btn-danger"
-            >
-              KICK
-            </button>
+        <li
+          v-for="username of usernames"
+          :key="username"
+          class="list-group-item d-flex"
+        >
+          <div>
+            <span class="my-auto">{{ username }}</span>
+            <div v-if="isHost" class="ms-auto">
+              <button
+                :disabled="isBusy"
+                @click="kickUser(username)"
+                type="button"
+                class="btn btn-sm btn-danger"
+              >
+                KICK
+              </button>
+            </div>
           </div>
         </li>
       </ul>
@@ -51,6 +57,7 @@
 
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap.min.js";
+import io from "socket.io-client";
 
 import UsernameModal from "../components/UsernameModal";
 
@@ -65,6 +72,8 @@ export default {
   },
   data() {
     return {
+      socket: undefined,
+
       error: "",
       starting_game: false,
       kicking_user: false,
@@ -73,16 +82,13 @@ export default {
 
       lobby_id: this.$route.params.lobby_id || "",
       user: "",
-      users: [],
+      usernames: [],
     };
   },
   mounted() {
     this.usernameModal = new bootstrap.Modal(
       document.getElementById("UsernameModal")
     );
-
-    // console.log(this.$route);
-    // console.log(this.$route.params.lobby_id);
 
     if (this.user.length == 0) {
       if (this.lobby_id.length !== 5 && !this.isHost) {
@@ -91,6 +97,14 @@ export default {
         this.usernameModal.show();
       }
     }
+
+    this.socket = io("ws://localhost:8080");
+
+    this.socket.on("lobby.update", (e) => {
+      this.usernames = (e.names || []).filter(
+        (username) => username !== this.user
+      );
+    });
   },
   computed: {
     isBusy() {
@@ -99,9 +113,10 @@ export default {
   },
   methods: {
     async joinLobby(username) {
+      this.user = username;
+
       if (this.lobby_id.length === 5 && !this.isHost) {
         console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
-
         let response = await fetch(
           `http://localhost:8080/game/${this.lobby_id}/players/${username}`,
           {
@@ -113,7 +128,6 @@ export default {
           return;
         }
       } else if (this.lobby_id.length === 0 && this.isHost) {
-        // TODO Create Lobby with Host Username
         console.log(`Creating lobby as ${username}...`);
 
         let response = await fetch("http://localhost:8080/game", {
@@ -133,7 +147,6 @@ export default {
         }
       }
 
-      this.user = username;
       this.usernameModal.hide();
 
       this.$router.push({
