@@ -52,6 +52,7 @@
     </button>
 
     <UsernameModal
+      ref="usernameModal"
       :is_host="is_host"
       :lobby_id="lobby_id"
       @entered="joinLobby"
@@ -134,6 +135,7 @@ export default {
         );
 
         if (response.status !== 200) {
+          this.$refs.usernameModal.setError("Couldn't join session!");
           return;
         }
       } else if (this.lobby_id.length === 0 && this.is_host) {
@@ -153,7 +155,7 @@ export default {
           if (lobby_id.length === 5)
             this.$router.push({ params: { lobby_id: lobby_id } });
         } else {
-          console.log("Error: Couldn't create session!");
+          this.$refs.usernameModal.setError("Couldn't create session!");
           return;
         }
       }

@@ -37,7 +37,7 @@
             @click="enterUsername"
             class="w-100 btn btn-primary"
           >
-            {{ isHost ? "Create Lobby" : "Join Lobby" }}
+            {{ is_host ? "Create Lobby" : "Join Lobby" }}
           </button>
         </div>
       </div>
@@ -50,11 +50,11 @@ export default {
   name: "UsernameModal",
   emits: ["entered"],
   props: {
-    isHost: {
+    is_host: {
       type: Boolean,
       default: false,
     },
-    lobbyID: {
+    lobby_id: {
       type: String,
       default: "",
     },
@@ -72,15 +72,18 @@ export default {
     },
   },
   methods: {
+    setError(error) {
+      this.error = error;
+    },
     async enterUsername() {
       if (!this.isValidUsername) {
         this.error = "Username needs to between 3 and 12 characters!";
         return;
       }
 
-      if (this.lobbyID.length === 5) {
+      if (this.lobby_id.length === 5) {
         let response = await fetch(
-          `http://localhost:8080/game/${this.lobbyID}/players`,
+          `http://localhost:8080/game/${this.lobby_id}/players`,
           {
             method: "GET",
           }
