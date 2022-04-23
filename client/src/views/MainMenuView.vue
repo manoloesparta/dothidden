@@ -69,16 +69,27 @@ export default {
     },
   },
   methods: {
-    joinLobby() {
+    async joinLobby() {
       if (this.isBusy) return;
 
       console.log(`Joining lobby #${this.lobby_id}...`);
 
       this.joining_lobby = true;
+      this.lobby_id = this.lobby_id.toUpperCase();
 
-      this.$router.push(`/lobby/${this.lobby_id}`);
+      let response = await fetch(
+        `http://localhost:8080/game/${this.lobby_id}/players`,
+        {
+          method: "GET",
+        }
+      );
 
-      this.error = "Lobby ID doesn't exist!";
+      if (response.status === 200) {
+        this.$router.push(`/lobby/${this.lobby_id}`);
+      } else {
+        this.error = "Lobby doesn't exist!";
+      }
+
       this.joining_lobby = false;
     },
     createLobby() {

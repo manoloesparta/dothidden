@@ -151,6 +151,7 @@ export default {
 
       this.$router.push({
         path: `/lobby/${this.lobby_id}`,
+        params: { isHost: this.isHost },
       });
     },
     closeLobby() {
