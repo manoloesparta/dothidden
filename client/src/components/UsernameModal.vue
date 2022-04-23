@@ -78,9 +78,9 @@ export default {
         return;
       }
 
-      if (this.lobbyID.length === 6) {
+      if (this.lobbyID.length === 5) {
         let response = await fetch(
-          `http://localhost:8080/game/${this.lobby_id}/players`,
+          `http://localhost:8080/game/${this.lobbyID}/players`,
           {
             method: "GET",
           }
@@ -90,7 +90,7 @@ export default {
           let json_response = await response.json();
           let lobby_users = json_response.names || [];
 
-          if (this.username in lobby_users) {
+          if (lobby_users.includes(this.username)) {
             this.error = "Username already exist!";
             return;
           }

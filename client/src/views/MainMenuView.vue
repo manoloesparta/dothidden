@@ -65,7 +65,7 @@ export default {
       return this.joining_lobby || this.creating_lobby;
     },
     isLobbyValid() {
-      return this.lobby_id.length == 6;
+      return this.lobby_id.length == 5;
     },
   },
   methods: {

@@ -85,7 +85,7 @@ export default {
     // console.log(this.$route.params.lobby_id);
 
     if (this.user.length == 0) {
-      if (this.lobby_id.length !== 6 && !this.isHost) {
+      if (this.lobby_id.length !== 5 && !this.isHost) {
         this.$router.push("/");
       } else {
         this.usernameModal.show();
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     async joinLobby(username) {
-      if (this.lobby_id.length === 6 && !this.isHost) {
+      if (this.lobby_id.length === 5 && !this.isHost) {
         console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
 
         let response = await fetch(
