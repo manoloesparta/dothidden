@@ -150,6 +150,8 @@ export default {
         if (response.status === 200) {
           let json_response = await response.json();
           lobby_id = json_response.code || "";
+          if (lobby_id.length === 5)
+            this.$router.push({ params: { lobby_id: lobby_id } });
         } else {
           console.log("Error: Couldn't create session!");
           return;
@@ -157,11 +159,6 @@ export default {
       }
 
       this.usernameModal.hide();
-
-      this.$router.push({
-        path: `/lobby/${this.lobby_id}`,
-        params: { isHost: this.isHost },
-      });
     },
     closeLobby() {
       if (this.is_host) {
