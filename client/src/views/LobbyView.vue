@@ -10,7 +10,7 @@
             type="button"
             class="btn btn-danger"
           >
-            {{ isHost ? "Close" : "Leave" }}
+            {{ is_host ? "Close" : "Leave" }}
           </button>
         </div>
       </div>
@@ -27,7 +27,7 @@
         >
           <div>
             <span class="my-auto">{{ username }}</span>
-            <div v-if="isHost" class="ms-auto">
+            <div v-if="is_host" class="ms-auto">
               <button
                 :disabled="isBusy"
                 @click="kickUser(username)"
@@ -51,7 +51,11 @@
       Start Game
     </button>
 
-    <UsernameModal :isHost="isHost" :lobbyID="lobby_id" @entered="joinLobby" />
+    <UsernameModal
+      :is_host="is_host"
+      :lobby_id="lobby_id"
+      @entered="joinLobby"
+    />
   </main>
 </template>
 
@@ -65,9 +69,13 @@ export default {
   name: "LobbyView",
   components: { UsernameModal },
   props: {
-    isHost: {
+    is_host: {
       type: Boolean,
       default: false,
+    },
+    lobby_id: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -80,10 +88,14 @@ export default {
 
       usernameModal: undefined,
 
-      lobby_id: this.$route.params.lobby_id || "",
       user: "",
       usernames: [],
     };
+  },
+  computed: {
+    isBusy() {
+      return this.starting_game || this.kicking_user;
+    },
   },
   mounted() {
     this.usernameModal = new bootstrap.Modal(
@@ -91,7 +103,7 @@ export default {
     );
 
     if (this.user.length == 0) {
-      if (this.lobby_id.length !== 5 && !this.isHost) {
+      if (this.lobby_id.length !== 5 && !this.is_host) {
         this.$router.push("/");
       } else {
         this.usernameModal.show();
@@ -106,16 +118,13 @@ export default {
       );
     });
   },
-  computed: {
-    isBusy() {
-      return this.starting_game || this.kicking_user;
-    },
-  },
   methods: {
     async joinLobby(username) {
       this.user = username;
 
-      if (this.lobby_id.length === 5 && !this.isHost) {
+      let lobby_id = this.lobby_id;
+
+      if (this.lobby_id.length === 5 && !this.is_host) {
         console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
         let response = await fetch(
           `http://localhost:8080/game/${this.lobby_id}/players/${username}`,
@@ -127,7 +136,7 @@ export default {
         if (response.status !== 200) {
           return;
         }
-      } else if (this.lobby_id.length === 0 && this.isHost) {
+      } else if (this.lobby_id.length === 0 && this.is_host) {
         console.log(`Creating lobby as ${username}...`);
 
         let response = await fetch("http://localhost:8080/game", {
@@ -140,7 +149,7 @@ export default {
 
         if (response.status === 200) {
           let json_response = await response.json();
-          this.lobby_id = json_response.code || "";
+          lobby_id = json_response.code || "";
         } else {
           console.log("Error: Couldn't create session!");
           return;
@@ -155,7 +164,7 @@ export default {
       });
     },
     closeLobby() {
-      if (this.isHost) {
+      if (this.is_host) {
         console.log(`Closing lobby #${this.lobby_id}...`);
       } else {
         console.log(`Leaving lobby #${this.lobby_id}...`);
@@ -164,7 +173,7 @@ export default {
       this.$router.push(`/`);
     },
     kickUser(user) {
-      if (!this.isHost) return;
+      if (!this.is_host) return;
 
       console.log(`Kicking user ${user} from lobby #${this.lobby_id}...`);
 
@@ -174,7 +183,7 @@ export default {
       this.kicking_user = false;
     },
     startGame() {
-      if (!this.isHost) return;
+      if (!this.is_host) return;
 
       console.log(`Starting game for lobby #${this.lobby_id}...`);
 
