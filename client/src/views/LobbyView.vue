@@ -96,16 +96,13 @@ export default {
   },
   methods: {
     joinLobby(username) {
-      if (username.length <= 3) return;
-
       console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
 
       this.user = username;
       this.usernameModal.hide();
 
       this.$router.push({
-        name: "/lobby/A123B6",
-        params: { isHost: this.isHost },
+        path: "/lobby/A123B6",
       });
     },
     closeLobby() {
