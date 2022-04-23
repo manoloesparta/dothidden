@@ -206,6 +206,34 @@ export default {
       this.error = "Couldn't start game!";
       this.starting_game = false;
     },
+    confirmLeave() {
+      return window.confirm(
+        `Do you really want to ${this.is_host ? "close" : "leave"} the lobby?`
+      );
+    },
+    confirmStayInLobby() {
+      return this.confirmLeave();
+    },
+    beforeWindowUnload(e) {
+      if (this.confirmStayInLobby()) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    },
+  },
+  created() {
+    window.addEventListener("beforeunload", this.beforeWindowUnload);
+  },
+  beforeUnmount() {
+    window.removeEventListener("beforeunload", this.beforeWindowUnload);
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.confirmStayInLobby()) {
+      this.usernameModal.hide();
+      next();
+    } else {
+      next(false);
+    }
   },
 };
 </script>
