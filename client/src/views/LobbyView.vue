@@ -45,7 +45,7 @@
       Start Game
     </button>
 
-    <UsernameModal :isHost="isHost" @entered="joinLobby" />
+    <UsernameModal :isHost="isHost" :lobbyID="lobby_id" @entered="joinLobby" />
   </main>
 </template>
 
@@ -81,6 +81,9 @@ export default {
       document.getElementById("UsernameModal")
     );
 
+    // console.log(this.$route);
+    // console.log(this.$route.params.lobby_id);
+
     if (this.user.length == 0) {
       if (this.lobby_id.length !== 6 && !this.isHost) {
         this.$router.push("/");
@@ -95,14 +98,46 @@ export default {
     },
   },
   methods: {
-    joinLobby(username) {
-      console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
+    async joinLobby(username) {
+      if (this.lobby_id.length === 6 && !this.isHost) {
+        console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
+
+        let response = await fetch(
+          `http://localhost:8080/game/${this.lobby_id}/players/${username}`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (response.status !== 200) {
+          return;
+        }
+      } else if (this.lobby_id.length === 0 && this.isHost) {
+        // TODO Create Lobby with Host Username
+        console.log(`Creating lobby as ${username}...`);
+
+        let response = await fetch("http://localhost:8080/game", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            host: username,
+          }),
+        });
+
+        if (response.status === 200) {
+          let json_response = await response.json();
+          this.lobby_id = json_response.code || "";
+        } else {
+          console.log("Error: Couldn't create session!");
+          return;
+        }
+      }
 
       this.user = username;
       this.usernameModal.hide();
 
       this.$router.push({
-        path: "/lobby/A123B6",
+        path: `/lobby/${this.lobby_id}`,
       });
     },
     closeLobby() {

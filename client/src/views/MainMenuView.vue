@@ -93,8 +93,8 @@ export default {
         params: { isHost: true },
       });
 
-      this.error = "Couldn't create lobby!";
-      this.creating_lobby = false;
+      // this.error = "Couldn't create lobby!";
+      // this.creating_lobby = false;
     },
   },
 };

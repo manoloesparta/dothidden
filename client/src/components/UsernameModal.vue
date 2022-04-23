@@ -54,6 +54,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    lobbyID: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -68,12 +72,32 @@ export default {
     },
   },
   methods: {
-    enterUsername() {
+    async enterUsername() {
       if (!this.isValidUsername) {
         this.error = "Username needs to between 3 and 12 characters!";
         return;
       }
 
+      if (this.lobbyID.length === 6) {
+        let response = await fetch(
+          `http://localhost:8080/game/${this.lobby_id}/players`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (response.status === 200) {
+          let json_response = await response.json();
+          let lobby_users = json_response.names || [];
+
+          if (this.username in lobby_users) {
+            this.error = "Username already exist!";
+            return;
+          }
+        }
+      }
+
+      this.error = "";
       this.$emit("entered", this.username);
     },
   },
