@@ -23,10 +23,11 @@
         <li
           v-for="username of usernames"
           :key="username"
-          class="list-group-item d-flex"
+          class="list-group-item"
         >
-          <div>
+          <div class="d-flex">
             <span class="my-auto">{{ username }}</span>
+
             <div v-if="is_host" class="ms-auto">
               <button
                 :disabled="isBusy"
@@ -171,15 +172,24 @@ export default {
 
       this.$router.push(`/`);
     },
-    kickUser(user) {
+    async kickUser(user) {
       if (!this.is_host) return;
 
       console.log(`Kicking user ${user} from lobby #${this.lobby_id}...`);
 
       this.kicking_user = true;
 
-      this.error = "Couldn't kick user!";
-      this.kicking_user = false;
+      let response = await fetch(
+        `http://localhost:8080/game/${this.lobby_id}/players/${user}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.status !== 204) {
+        this.error = "Couldn't kick user!";
+        this.kicking_user = false;
+      }
     },
     startGame() {
       if (!this.is_host) return;
