@@ -44,7 +44,8 @@
     </div>
 
     <button
-      :disabled="isBusy"
+      v-if="is_host"
+      :disabled="isBusy || !canStart"
       @click="startGame"
       type="button"
       class="btn btn-secondary btn-lg my-2 position-fixed bottom-0 start-50 translate-middle-x"
@@ -97,6 +98,10 @@ export default {
   computed: {
     isBusy() {
       return this.starting_game || this.kicking_user;
+    },
+
+    canStart() {
+      return this.usernames.length >= 1;
     },
   },
   mounted() {
