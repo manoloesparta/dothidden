@@ -14,7 +14,7 @@ router.post('/game/:gameId/players/:playerNick', (req, res) => {
     const lobby = currentLobbies.getLobby(gameId);
     lobby.addPlayer(playerNick);
 
-    io.emit('lobby.update', { names: lobby.getPlayerNames() });
+    io.emit('lobby.update', { names: lobby.getPlayerNames(), lobby: lobby.lobbyId });
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -35,7 +35,7 @@ router.delete('/game/:gameId/players/:playerNick', (req, res) => {
     const lobby = currentLobbies.getLobby(gameId);
     lobby.removePlayer(playerNick);
 
-    io.emit('lobby.update', { names: lobby.getPlayerNames() });
+    io.emit('lobby.update', { names: lobby.getPlayerNames(), lobby: lobby.lobbyId });
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
