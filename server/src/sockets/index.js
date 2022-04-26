@@ -2,7 +2,10 @@ const socketio = require('socket.io');
 
 class SocketService {
   constructor(server) {
-    const options = { cors: { origin: '*' } };
+    const options = { 
+      cors: { origin: '*' },
+      transports: ['websocket', 'polling'] 
+    };
     const io = socketio(server, options);
 
     io.on('connection', (socket) => {

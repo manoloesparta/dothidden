@@ -21,4 +21,23 @@ router.post('/game', (req, res) => {
   }
 });
 
+router.get('/game/:gameId/host', (req, res) => {
+  try {
+    checkBody(req, 'host');
+    checkBody(req, 'gameId');
+
+    const { gameId } = req.params;
+    const lobby = currentLobbies.getLobby(gameId)
+
+    res.status(200).send({host: lobby.host});
+  } catch (error) {
+    logger.error(error);
+    if (error instanceof HttpExceptions) {
+      res.status(error.statusCode).send({ message: error.message });
+    } else {
+      res.status(500).send({ message: 'Internal server error' });
+    }
+  }
+});
+
 module.exports = { GameRoutes: router };

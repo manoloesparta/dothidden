@@ -13,7 +13,6 @@ class LobbyManager {
       lobbyId = randString(5);
     }
     this.lobbies[lobbyId] = new Lobby(lobbyId, host);
-    setTimeout(() => this.removeGame(lobbyId), 24 * 60 * 60 * 1000);
     return lobbyId;
   }
 

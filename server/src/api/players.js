@@ -47,6 +47,25 @@ router.delete('/game/:gameId/players/:playerNick', (req, res) => {
   }
 });
 
+router.get('/game/:gameId/players/:playerNick', (req, res) => {
+  try {
+    checkPathParams(req, 'gameId', 'playerNick');
+
+    const { gameId, playerNick } = req.params;
+    const lobby = currentLobbies.getLobby(gameId);
+    const player = lobby.getPlayer(playerNick);
+
+    res.status(200).send({ player: player.name });
+  } catch (error) {
+    logger.error(error);
+    if (error instanceof HttpExceptions) {
+      res.status(error.statusCode).send({ message: error.message });
+    } else {
+      res.status(500).send({ message: 'Internal server error' });
+    }
+  }
+});
+
 router.get('/game/:gameId/players', (req, res) => {
   try {
     checkPathParams(req, 'gameId');

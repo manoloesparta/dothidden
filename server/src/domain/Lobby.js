@@ -1,5 +1,5 @@
 const { Player } = require('./Player');
-const { ConflictException } = require('../utils/exceptions');
+const { ConflictException, NotFoundException } = require('../utils/exceptions');
 
 class Lobby {
   constructor(lobbyId, host) {
@@ -27,6 +27,14 @@ class Lobby {
 
   removePlayer(player) {
     this.players = this.players.filter((user) => user.name !== player);
+  }
+
+  getPlayer(playerName) {
+    const player = this.players.filter((player) => player.name === playerName);
+    if(!player) {
+      throw NotFoundException('Player not found')
+    }
+    return player.name
   }
 }
 
