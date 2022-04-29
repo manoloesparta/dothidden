@@ -8,8 +8,6 @@ services:
     container_name: dothidden_server
     ports:
       - 8080:8080
-    volumes:
-      - .:/usr/src/app
     networks:
       - dothidden_network
 

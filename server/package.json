@@ -20,6 +20,7 @@
   "dependencies": {
     "@types/express": "^4.17.13",
     "@types/http-server": "^0.12.1",
+    "@types/node": "^17.0.30",
     "@types/socket.io": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^4.17.3",
