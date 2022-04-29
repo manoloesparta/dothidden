@@ -1,9 +1,10 @@
-const express = require('express');
-const { currentLobbies } = require('../domain/LobbyManager');
-const { HttpExceptions } = require('../utils/exceptions');
-const { logger, checkPathParams } = require('../utils/utils');
+import { Router } from "express";
 
-const router = express.Router();
+import { logger, checkPathParams } from "../utils/utils";
+import { HttpException } from "../utils/exceptions";
+import { currentLobbies } from "../domain/LobbyManager";
+
+const router: Router = Router();
 
 router.post('/game/:gameId/players/:playerNick', (req, res) => {
   const io = req.app.get('socketService');
@@ -18,7 +19,7 @@ router.post('/game/:gameId/players/:playerNick', (req, res) => {
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
-    if (error instanceof HttpExceptions) {
+    if (error instanceof HttpException) {
       res.status(error.statusCode).send({ message: error.message });
     } else {
       res.status(500).send({ message: 'Internal server error' });
@@ -39,7 +40,7 @@ router.delete('/game/:gameId/players/:playerNick', (req, res) => {
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
-    if (error instanceof HttpExceptions) {
+    if (error instanceof HttpException) {
       res.status(error.statusCode).send({ message: error.message });
     } else {
       res.status(500).send({ message: 'Internal server error' });
@@ -58,7 +59,7 @@ router.get('/game/:gameId/players/:playerNick', (req, res) => {
     res.status(200).send({ player: player.name });
   } catch (error) {
     logger.error(error);
-    if (error instanceof HttpExceptions) {
+    if (error instanceof HttpException) {
       res.status(error.statusCode).send({ message: error.message });
     } else {
       res.status(500).send({ message: 'Internal server error' });
@@ -76,7 +77,7 @@ router.get('/game/:gameId/players', (req, res) => {
     res.status(200).send({ names: lobby.getPlayerNames() });
   } catch (error) {
     logger.error(error);
-    if (error instanceof HttpExceptions) {
+    if (error instanceof HttpException) {
       res.status(error.statusCode).send({ message: error.message });
     } else {
       res.status(500).send({ message: 'Internal server error' });
@@ -84,4 +85,4 @@ router.get('/game/:gameId/players', (req, res) => {
   }
 });
 
-module.exports = { PlayerRoutes: router };
+export { router as PlayerRoutes };

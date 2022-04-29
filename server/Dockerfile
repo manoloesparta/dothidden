@@ -10,4 +10,6 @@ COPY . .
 
 EXPOSE 8080
 
+RUN npx tsc
+
 CMD ["npm", "run", "start"]

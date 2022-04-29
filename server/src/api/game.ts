@@ -1,10 +1,10 @@
-const express = require('express');
+import { Router } from "express";
 
-const { currentLobbies } = require('../domain/LobbyManager');
-const { HttpExceptions } = require('../utils/exceptions');
-const { checkBody, logger } = require('../utils/utils');
+import { checkBody, logger } from "../utils/utils";
+import { HttpException } from "../utils/exceptions";
+import { currentLobbies } from "../domain/LobbyManager";
 
-const router = express.Router();
+const router: Router = Router();
 
 router.post('/game', (req, res) => {
   try {
@@ -13,7 +13,7 @@ router.post('/game', (req, res) => {
     res.status(200).send({ code: lobbyId });
   } catch (error) {
     logger.error(error);
-    if (error instanceof HttpExceptions) {
+    if (error instanceof HttpException) {
       res.status(error.statusCode).send({ message: error.message });
     } else {
       res.status(500).send({ message: 'Internal server error' });
@@ -27,12 +27,12 @@ router.get('/game/:gameId/host', (req, res) => {
     checkBody(req, 'gameId');
 
     const { gameId } = req.params;
-    const lobby = currentLobbies.getLobby(gameId)
+    const lobby = currentLobbies.getLobby(gameId);
 
-    res.status(200).send({host: lobby.host});
+    res.status(200).send({ host: lobby.host });
   } catch (error) {
     logger.error(error);
-    if (error instanceof HttpExceptions) {
+    if (error instanceof HttpException) {
       res.status(error.statusCode).send({ message: error.message });
     } else {
       res.status(500).send({ message: 'Internal server error' });
@@ -40,4 +40,4 @@ router.get('/game/:gameId/host', (req, res) => {
   }
 });
 
-module.exports = { GameRoutes: router };
+export { router as GameRoutes };

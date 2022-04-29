@@ -1,4 +1,5 @@
-class HttpExceptions extends Error {
+export class HttpException extends Error {
+  statusCode: number;
   constructor(message) {
     super(message);
     this.name = 'HTTP error message';
@@ -6,7 +7,7 @@ class HttpExceptions extends Error {
   }
 }
 
-class NotFoundException extends HttpExceptions {
+export class NotFoundException extends HttpException {
   constructor(message) {
     super(message);
     this.name = 'Not Found';
@@ -14,7 +15,7 @@ class NotFoundException extends HttpExceptions {
   }
 }
 
-class ForbiddenException extends HttpExceptions {
+export class ForbiddenException extends HttpException {
   constructor(message) {
     super(message);
     this.name = 'Forbidden';
@@ -22,7 +23,7 @@ class ForbiddenException extends HttpExceptions {
   }
 }
 
-class BadRequestException extends HttpExceptions {
+export class BadRequestException extends HttpException {
   constructor(message) {
     super(message);
     this.name = 'Bad Request';
@@ -30,7 +31,7 @@ class BadRequestException extends HttpExceptions {
   }
 }
 
-class ConflictException extends HttpExceptions {
+export class ConflictException extends HttpException {
   constructor(message) {
     super(message);
     this.name = 'Conflict';
@@ -38,27 +39,17 @@ class ConflictException extends HttpExceptions {
   }
 }
 
-class TeapotException extends HttpExceptions {
+export class TeapotException extends HttpException {
   constructor(message) {
     super(message);
     this.name = "I'm a Teapot";
     this.statusCode = 418;
   }
 }
-class InternalServerErrorException extends HttpExceptions {
+export class InternalServerErrorException extends HttpException {
   constructor(message) {
     super(message);
     this.name = 'Internal Server Error';
     this.statusCode = 500;
   }
 }
-
-module.exports = {
-  NotFoundException,
-  ForbiddenException,
-  TeapotException,
-  BadRequestException,
-  InternalServerErrorException,
-  ConflictException,
-  HttpExceptions,
-};
