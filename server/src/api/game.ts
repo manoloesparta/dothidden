@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { checkBody, logger } from '../utils/utils';
+import { checkBody, checkPathParams, logger } from '../utils/utils';
 import { HttpException } from '../utils/exceptions';
 import { currentLobbies } from '../domain/LobbyManager';
 
@@ -23,13 +23,32 @@ router.post('/game', (req, res) => {
 
 router.get('/game/:gameId/host', (req, res) => {
   try {
-    checkBody(req, 'host');
-    checkBody(req, 'gameId');
+    checkPathParams(req, 'gameId');
 
     const { gameId } = req.params;
     const lobby = currentLobbies.getLobby(gameId);
 
     res.status(200).send({ host: lobby.host });
+  } catch (error) {
+    logger.error(error);
+    if (error instanceof HttpException) {
+      res.status(error.statusCode).send({ message: error.message });
+    } else {
+      res.status(500).send({ message: 'Internal server error' });
+    }
+  }
+});
+
+router.delete('/game/:gameId', (req, res) => {
+  const io = req.app.get('socketService');
+  try {
+    checkPathParams(req, 'gameId');
+
+    const { gameId } = req.params;
+    currentLobbies.removeLobby(gameId)
+
+    io.emit('lobby.update', { names: [], lobby: gameId })
+    res.sendStatus(204);
   } catch (error) {
     logger.error(error);
     if (error instanceof HttpException) {
