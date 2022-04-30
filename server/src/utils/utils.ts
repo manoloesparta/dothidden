@@ -1,4 +1,4 @@
-import { BadRequestException } from "./exceptions";
+import { BadRequestException } from './exceptions';
 
 export const randInt = (min, max) => min + Math.floor(Math.random() * max);
 

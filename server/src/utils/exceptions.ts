@@ -42,7 +42,7 @@ export class ConflictException extends HttpException {
 export class TeapotException extends HttpException {
   constructor(message) {
     super(message);
-    this.name = "I'm a Teapot";
+    this.name = 'I\'m a Teapot';
     this.statusCode = 418;
   }
 }

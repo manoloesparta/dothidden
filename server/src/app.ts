@@ -1,5 +1,5 @@
-import { logger } from "./utils/utils";
-import { createApp } from "./api"
+import { logger } from './utils/utils';
+import { createApp } from './api'
 
 const app = createApp();
 
