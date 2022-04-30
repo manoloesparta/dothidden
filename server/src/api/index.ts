@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Express } from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
 import http, {Server} from 'http'
@@ -10,7 +10,7 @@ import { SocketService } from '../sockets'
 const format = '[:date[clf]] ":method :url" :status - ":user-agent"';
 
 export const createApp = () => {
-  const app = express();
+  const app: Express = express();
   const server: Server = http.createServer(app);
 
   app.get('/health', (req, res) => res.sendStatus(200));

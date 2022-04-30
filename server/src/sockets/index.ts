@@ -10,7 +10,7 @@ export class SocketService {
     const io: socketio.Server = new socketio.Server(server, options);
 
     io.on('connection', (socket) => {
-      console.log('user connected', socket.id);
+      console.log('user connected');
     });
 
     this.io = io;
