@@ -15,11 +15,10 @@
   "rules": {
     "no-console": "off",
     "max-classes-per-file": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/quotes": ["error", "single", {"allowTemplateLiterals": true} ]
   },
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
-  ]
+  "plugins": ["@typescript-eslint"]
 }

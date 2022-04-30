@@ -3,8 +3,8 @@ import cors from 'cors'
 import morgan from 'morgan'
 import http, {Server} from 'http'
 
-import { GameRoutes } from "./game";
-import { PlayerRoutes } from "./players";
+import { GameRoutes } from './game';
+import { PlayerRoutes } from './players';
 import { SocketService } from '../sockets'
 
 const format = '[:date[clf]] ":method :url" :status - ":user-agent"';

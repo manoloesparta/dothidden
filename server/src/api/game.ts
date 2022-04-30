@@ -1,8 +1,8 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import { checkBody, logger } from "../utils/utils";
-import { HttpException } from "../utils/exceptions";
-import { currentLobbies } from "../domain/LobbyManager";
+import { checkBody, logger } from '../utils/utils';
+import { HttpException } from '../utils/exceptions';
+import { currentLobbies } from '../domain/LobbyManager';
 
 const router: Router = Router();
 

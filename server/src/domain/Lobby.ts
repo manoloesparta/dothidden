@@ -1,5 +1,5 @@
-import { Game } from "./Game";
-import { Player } from "./Players";
+import { Game } from './Game';
+import { Player } from './Players';
 
 import { ConflictException, NotFoundException } from '../utils/exceptions';
 

@@ -1,5 +1,5 @@
-import { Game } from "./Game";
-import {Lobby} from "./Lobby"
+import { Game } from './Game';
+import {Lobby} from './Lobby'
 import {NotFoundException} from '../utils/exceptions'
 import {randString} from '../utils/utils'
 
