@@ -36,7 +36,7 @@ router.delete('/game/:gameId/players/:playerNick', (req, res) => {
     const lobby = currentLobbies.getLobby(gameId);
     lobby.removePlayer(playerNick);
 
-    io.emit('lobby.update', { names: lobby.getPlayerNames(), lobby: lobby.lobbyId });
+    io.emit('lobby.update', { names: [], lobby: lobby.lobbyId });
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
