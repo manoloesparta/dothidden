@@ -185,22 +185,21 @@ export default {
     async closeLobby() {
       if (this.is_host) {
         console.log(`Closing lobby #${this.lobby_id}...`);
-      } else {
-        console.log(`Leaving lobby #${this.lobby_id}...`);
-      }
-      let response = await fetch(`${this.apiBaseUrl}/game/${this.lobby_id}`, {
-        method: "DELETE",
-      });
+        let response = await fetch(`${this.apiBaseUrl}/game/${this.lobby_id}`, {
+          method: "DELETE",
+        });
 
-      if (response.status !== 204) {
-        this.error = "Couldn't close game!";
+        if (response.status !== 204) {
+          this.error = "Couldn't close game!";
+        }
+      } else {
+        this.kickUser(this.user);
+        console.log(`Leaving lobby #${this.lobby_id}...`);
       }
 
       this.$router.push(`/`);
     },
     async kickUser(user) {
-      if (!this.is_host) return;
-
       console.log(`Kicking user ${user} from lobby #${this.lobby_id}...`);
 
       this.kicking_user = true;
