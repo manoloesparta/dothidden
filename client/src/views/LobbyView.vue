@@ -80,6 +80,10 @@ export default {
       type: String,
       default: "",
     },
+    apiBaseUrl: {
+      type: String,
+      default: "https://api.hidenseek.manoloesparta.com",
+    },
   },
   data() {
     return {
@@ -117,7 +121,7 @@ export default {
       }
     }
 
-    this.socket = io("ws://localhost:8080");
+    this.socket = io("wss://api.hidenseek.manoloesparta.com");
 
     this.socket.on("lobby.update", (e) => {
       this.usernames = (e.names || []).filter(
@@ -134,7 +138,7 @@ export default {
       if (this.lobby_id.length === 5 && !this.is_host) {
         console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
         let response = await fetch(
-          `http://localhost:8080/game/${this.lobby_id}/players/${username}`,
+          `${this.apiBaseUrl}/game/${this.lobby_id}/players/${username}`,
           {
             method: "POST",
           }
@@ -147,7 +151,7 @@ export default {
       } else if (this.lobby_id.length === 0 && this.is_host) {
         console.log(`Creating lobby as ${username}...`);
 
-        let response = await fetch("http://localhost:8080/game", {
+        let response = await fetch(`${this.apiBaseUrl}/game`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -185,7 +189,7 @@ export default {
       this.kicking_user = true;
 
       let response = await fetch(
-        `http://localhost:8080/game/${this.lobby_id}/players/${user}`,
+        `${this.apiBaseUrl}/game/${this.lobby_id}/players/${user}`,
         {
           method: "DELETE",
         }

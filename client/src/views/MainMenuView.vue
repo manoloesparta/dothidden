@@ -78,7 +78,7 @@ export default {
       this.lobby_id = this.lobby_id.toUpperCase();
 
       let response = await fetch(
-        `http://localhost:8080/game/${this.lobby_id}/players`,
+        `https://api.hidenseek.manoloesparta.com/game/${this.lobby_id}/players`,
         {
           method: "GET",
         }

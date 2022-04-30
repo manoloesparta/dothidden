@@ -58,6 +58,10 @@ export default {
       type: String,
       default: "",
     },
+    apiBaseUrl: {
+      type: String,
+      default: "https://api.hidenseek.manoloesparta.com",
+    },
   },
   data() {
     return {
@@ -83,7 +87,7 @@ export default {
 
       if (this.lobby_id.length === 5) {
         let response = await fetch(
-          `http://localhost:8080/game/${this.lobby_id}/players`,
+          `${this.apiBaseUrl}/game/${this.lobby_id}/players`,
           {
             method: "GET",
           }
