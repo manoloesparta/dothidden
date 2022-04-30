@@ -97,6 +97,7 @@ export default {
 
       user: "",
       usernames: [],
+      lobbyIdCopy: this.lobby_id,
     };
   },
   computed: {
@@ -124,6 +125,13 @@ export default {
     this.socket = io("wss://api.hidenseek.manoloesparta.com");
 
     this.socket.on("lobby.update", (e) => {
+      if (!e.names.includes(this.user)) {
+        //this.$router.replace({ name: "main_menu", force: true });
+        this.usernameModal.hide();
+        this.lobbyIdCopy = "";
+        window.location = "/";
+        //this.$router.go();
+      }
       this.usernames = (e.names || []).filter(
         (username) => username !== this.user
       );
