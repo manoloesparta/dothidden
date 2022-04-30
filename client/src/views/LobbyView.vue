@@ -125,16 +125,18 @@ export default {
     this.socket = io("wss://api.hidenseek.manoloesparta.com");
 
     this.socket.on("lobby.update", (e) => {
-      if (!e.names.includes(this.user)) {
-        //this.$router.replace({ name: "main_menu", force: true });
-        this.usernameModal.hide();
-        this.lobbyIdCopy = "";
-        window.location = "/";
-        //this.$router.go();
+      if (e.lobby == this.lobby_id) {
+        if (!e.names.includes(this.user)) {
+          //this.$router.replace({ name: "main_menu", force: true });
+          this.usernameModal.hide();
+          this.lobbyIdCopy = "";
+          window.location = "/";
+          //this.$router.go();
+        }
+        this.usernames = (e.names || []).filter(
+          (username) => username !== this.user
+        );
       }
-      this.usernames = (e.names || []).filter(
-        (username) => username !== this.user
-      );
     });
   },
   methods: {
@@ -180,11 +182,18 @@ export default {
 
       this.usernameModal.hide();
     },
-    closeLobby() {
+    async closeLobby() {
       if (this.is_host) {
         console.log(`Closing lobby #${this.lobby_id}...`);
       } else {
         console.log(`Leaving lobby #${this.lobby_id}...`);
+      }
+      let response = await fetch(`${this.apiBaseUrl}/game/${this.lobby_id}`, {
+        method: "DELETE",
+      });
+
+      if (response.status !== 204) {
+        this.error = "Couldn't close game!";
       }
 
       this.$router.push(`/`);
