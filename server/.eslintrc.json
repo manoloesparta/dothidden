@@ -5,13 +5,21 @@
     "node": true
   },
   "extends": [
-    "airbnb-base"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": "latest"
   },
   "rules": {
     "no-console": "off",
-    "max-classes-per-file": "off"
-  }
+    "max-classes-per-file": "off",
+    "@typescript-eslint/no-explicit-any": "off"
+  },
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ]
 }

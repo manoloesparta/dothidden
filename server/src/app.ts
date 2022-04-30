@@ -1,5 +1,5 @@
-const { createApp } = require('./api');
-const { logger } = require('./utils/utils');
+import { logger } from "./utils/utils";
+import { createApp } from "./api"
 
 const app = createApp();
 
