@@ -60,6 +60,9 @@ export default {
       lobby_id: "",
     };
   },
+  mounted() {
+    console.log(process.env);
+  },
   computed: {
     isBusy() {
       return this.joining_lobby || this.creating_lobby;
