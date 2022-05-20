@@ -110,6 +110,9 @@ export default {
     canStart() {
       return this.usernames.length >= 1;
     },
+    canLeave() {
+      return this.left || this.user.length == 0;
+    },
   },
   mounted() {
     this.usernameModal = new bootstrap.Modal(
@@ -237,7 +240,7 @@ export default {
       return this.confirmLeave();
     },
     beforeWindowUnload(e) {
-      if (!this.left || this.confirmStayInLobby()) {
+      if (!this.canLeave || this.confirmStayInLobby()) {
         e.preventDefault();
         e.returnValue = "";
       }
@@ -250,7 +253,7 @@ export default {
     window.removeEventListener("beforeunload", this.beforeWindowUnload);
   },
   beforeRouteLeave(to, from, next) {
-    if (this.left || this.confirmStayInLobby()) {
+    if (this.canLeave || this.confirmStayInLobby()) {
       this.usernameModal.hide();
       next();
     } else {
