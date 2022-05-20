@@ -123,11 +123,7 @@ export default {
     this.socket.on("lobby.update", (e) => {
       if (e.lobby == this.lobby_id) {
         if (!e.names.includes(this.user)) {
-          //this.$router.replace({ name: "main_menu", force: true });
-          this.usernameModal.hide();
-          this.lobbyIdCopy = "";
-          window.location = "/";
-          //this.$router.go();
+          this.$router.push("/");
         }
         this.usernames = (e.names || []).filter(
           (username) => username !== this.user
