@@ -1,34 +1,34 @@
 <template>
   <div
     class="d-flex flex-column justify-content-center text-center"
+    style="color: white"
     :style="backgroundStyle"
   >
     <div v-if="state === 'hidding'">
       <div>
-        <h1 class="display-1"><em>128</em></h1>
+        <h1 class="display-1">
+          <em>{{ hide_time }}</em>
+        </h1>
         <br />
         <h1 class="display-1"><strong>HIDE</strong></h1>
       </div>
     </div>
-    <div v-if="state === 'seek'">
+
+    <div v-if="state === 'playing'">
       <div>
-        <h3 class="display-1"><em>10:00</em></h3>
-        <br />
-        <img class="mb-4" src="../assets/dothidden.svg" alt="" width="198" />
-      </div>
-    </div>
-    <div v-if="state === 'hide'">
-      <div>
-        <h3 class="display-1"><em>10:00</em></h3>
+        <h3 class="display-1">
+          <em>{{ game_time_text }}</em>
+        </h3>
         <br />
         <img class="mb-4" src="../assets/dothidden.svg" alt="" width="198" />
         <br />
-        <h1 class="display-1"><em>10 FT</em></h1>
-        <br />
-        <h1 class="display-1"><strong>AWAY</strong></h1>
+        <h1 class="display-1">
+          <strong>
+            {{ role == "hidder" ? "HIDE" : "SEEK" }}
+          </strong>
+        </h1>
       </div>
     </div>
-    <div v-if="state === 'caught'"></div>
   </div>
 </template>
 
@@ -50,18 +50,24 @@ export default {
       // Game States:
       // hidding
       // playing
-      state: "hide",
+      state: "playing",
 
       user: "",
 
-      delta: 0,
+      // Game Roles
+      // hidder
+      // seeker
+      role: "hidder",
       distance: 1.0,
+      hide_time: 128,
+      game_time: 600,
     };
   },
   computed: {
     backgroundStyle() {
       let bgc = "rgb(255, 255, 255)";
-      if (this.distance >= 0.9) bgc = "rgb(255, 0, 0)";
+      if (this.state == "hidding") bgc = "#9932cc";
+      else if (this.distance >= 0.9) bgc = "rgb(255, 0, 0)";
       else if (this.distance >= 0.8) bgc = "rgb(228, 0, 0)";
       else if (this.distance >= 0.7) bgc = "rgb(192, 0, 0)";
       else if (this.distance >= 0.6) bgc = "rgb(128, 0, 0)";
@@ -72,6 +78,11 @@ export default {
       else if (this.distance >= 0.1) bgc = "rgb(0, 228, 228)";
       else if (this.distance >= -1.0) bgc = "rgb(0, 255, 255)";
       return { backgroundColor: bgc };
+    },
+    game_time_text() {
+      let minutes = Math.floor(this.game_time / 60);
+      let seconds = this.game_time % 60;
+      return `${minutes}:${String(seconds).padStart(2, "0")}`;
     },
   },
   mounted() {
@@ -84,21 +95,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.hidding-color {
-  background-color: #9932cc;
-}
-
-.seek-color {
-  background-color: #ff0000;
-}
-
-.hide-color {
-  background-color: #00bfff;
-}
-
-.caught-color {
-  background-color: #dc143c;
-}
-</style>
