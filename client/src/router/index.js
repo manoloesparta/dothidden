@@ -12,6 +12,7 @@ const routes = [
     props: (route) => ({
       is_host: route.params.is_host,
       lobby_id: route.params.lobby_id,
+      user: route.params.user,
     }),
     component: () => import("../views/LobbyView.vue"),
   },
@@ -21,6 +22,7 @@ const routes = [
     props: (route) => ({
       is_host: route.params.is_host,
       lobby_id: route.params.lobby_id,
+      user: route.params.user,
     }),
     component: () => import("../views/GameView.vue"),
   },

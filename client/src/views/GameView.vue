@@ -44,23 +44,25 @@ export default {
       type: String,
       default: "",
     },
+    user: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
       // Game States:
       // hidding
       // playing
-      state: "playing",
-
-      user: "",
+      state: "hidding",
 
       // Game Roles
       // hidder
       // seeker
       role: "hidder",
-      distance: 1.0,
-      hide_time: 128,
-      game_time: 600,
+      distance: 0.0,
+      hide_time: 10,
+      game_time: 10,
     };
   },
   computed: {
@@ -82,7 +84,10 @@ export default {
     game_time_text() {
       let minutes = Math.floor(this.game_time / 60);
       let seconds = this.game_time % 60;
-      return `${minutes}:${String(seconds).padStart(2, "0")}`;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+        2,
+        "0"
+      )}`;
     },
   },
   mounted() {

@@ -17,7 +17,7 @@
     </nav>
 
     <div class="card w-100" style="width: 18rem">
-      <div class="card-header">{{ user }}</div>
+      <div class="card-header">{{ getUser }}</div>
 
       <ul class="list-group list-group-flush">
         <li
@@ -84,6 +84,10 @@ export default {
       type: String,
       default: "",
     },
+    user: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -97,7 +101,7 @@ export default {
 
       usernameModal: undefined,
 
-      user: "",
+      username: "",
       usernames: [],
       lobbyIdCopy: this.lobby_id,
     };
@@ -111,7 +115,11 @@ export default {
       return this.usernames.length >= 1;
     },
     canLeave() {
-      return this.left || this.user.length == 0;
+      return this.left || this.getUser.length == 0;
+    },
+
+    getUser() {
+      return this.user.length > 0 ? this.user : this.username;
     },
   },
   mounted() {
@@ -119,7 +127,7 @@ export default {
       document.getElementById("UsernameModal")
     );
 
-    if (this.user.length == 0) {
+    if (this.getUser.length == 0) {
       if (this.lobby_id.length !== 5 && !this.is_host) {
         this.$router.push("/");
       } else {
@@ -131,19 +139,19 @@ export default {
 
     this.socket.on("lobby.update", (e) => {
       if (e.lobby == this.lobby_id) {
-        if (!e.names.includes(this.user)) {
+        if (!e.names.includes(this.getUser)) {
           this.left = true;
           this.$router.push("/");
         }
         this.usernames = (e.names || []).filter(
-          (username) => username !== this.user
+          (username) => username !== this.getUser
         );
       }
     });
   },
   methods: {
     async joinLobby(username) {
-      this.user = username;
+      this.username = username;
 
       let lobby_id = this.lobby_id;
 
@@ -198,7 +206,7 @@ export default {
           this.error = "Couldn't close game!";
         }
       } else {
-        this.kickUser(this.user);
+        this.kickUser(this.getUser);
         console.log(`Leaving lobby #${this.lobby_id}...`);
       }
 
@@ -227,6 +235,21 @@ export default {
       console.log(`Starting game for lobby #${this.lobby_id}...`);
 
       this.starting_game = true;
+
+      // TODO POST to API the start of this lobbie's game
+
+      this.left = true;
+      console.log(
+        `Lobby #${this.lobby_id} starting game as ${this.getUser}...`
+      );
+      this.$router.push({
+        name: `lobby_game`,
+        params: {
+          is_host: this.is_host,
+          lobby_id: this.lobby_id,
+          user: this.getUser,
+        },
+      });
 
       this.error = "Couldn't start game!";
       this.starting_game = false;
