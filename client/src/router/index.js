@@ -16,8 +16,8 @@ const routes = [
     component: () => import("../views/LobbyView.vue"),
   },
   {
-    path: "/lobby/:lobby_id/game",
-    name: "lobby",
+    path: "/lobby/:lobby_id?/game",
+    name: "lobby_game",
     props: (route) => ({
       is_host: route.params.is_host,
       lobby_id: route.params.lobby_id,
