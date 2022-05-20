@@ -91,12 +91,33 @@ export default {
     },
   },
   mounted() {
-    // setInterval(() => {
-    //   if (this.distance >= 1.0) this.delta = -1;
-    //   else if (this.distance <= 0.0) this.delta = 1;
-    //   this.distance += 0.1 * this.delta;
-    //   console.log(this.distance);
-    // }, 250);
+    // USED TO SIMUlATE GAME ROUND; REMOVE FOR PRODUCTION
+    const loop = setInterval(() => {
+      if (this.state == "hidding") {
+        this.hide_time -= 1;
+        if (this.hide_time <= 0) this.state = "playing";
+      } else if (this.state == "playing") {
+        if (this.distance >= 1.0) this.delta = -1;
+        else if (this.distance <= 0.0) this.delta = 1;
+        this.distance += 0.1 * this.delta;
+        this.game_time -= 1;
+        if (this.game_time <= 0) {
+          console.log(
+            `Lobby #${this.lobby_id} finished game as ${this.user}...`
+          );
+          clearInterval(loop);
+          this.$router.push({
+            name: `lobby`,
+            params: {
+              is_host: this.is_host,
+              lobby_id: this.lobby_id,
+              user: this.user,
+            },
+          });
+        }
+        console.log(this.distance);
+      }
+    }, 1000);
   },
 };
 </script>
