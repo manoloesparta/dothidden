@@ -60,9 +60,6 @@ export default {
       lobby_id: "",
     };
   },
-  mounted() {
-    console.log(process.env);
-  },
   computed: {
     isBusy() {
       return this.joining_lobby || this.creating_lobby;
@@ -81,7 +78,7 @@ export default {
       this.lobby_id = this.lobby_id.toUpperCase();
 
       let response = await fetch(
-        `https://api.hidenseek.manoloesparta.com/game/${this.lobby_id}/players`,
+        `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players`,
         {
           method: "GET",
         }
