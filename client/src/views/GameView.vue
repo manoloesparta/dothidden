@@ -16,7 +16,17 @@
       </div>
     </div>
     <div v-if="state === 'seek'"></div>
-    <div v-if="state === 'hide'"></div>
+    <div v-if="state === 'hide'">
+      <div>
+        <h3 class="display-1"><em>10:00</em></h3>
+        <br />
+        <img class="mb-4" src="../assets/dothidden.svg" alt="" width="198" />
+        <br />
+        <h1 class="display-1"><em>10 FT</em></h1>
+        <br />
+        <h1 class="display-1"><strong>AWAY</strong></h1>
+      </div>
+    </div>
     <div v-if="state === 'caught'"></div>
   </div>
 </template>
@@ -55,14 +65,14 @@ export default {
 }
 
 .seek-color {
-  color: #dc143c;
+  background-color: #dc143c;
 }
 
 .hide-color {
-  color: #00bfff;
+  background-color: #00bfff;
 }
 
 .caught-color {
-  color: #ff0000;
+  background-color: #ff0000;
 }
 </style>
