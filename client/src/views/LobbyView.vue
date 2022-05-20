@@ -48,7 +48,11 @@
       :disabled="isBusy || !canStart"
       @click="startGame"
       type="button"
-      class="btn btn-secondary btn-lg my-2 position-fixed bottom-0 start-50 translate-middle-x"
+      class="btn btn-lg my-2 position-fixed bottom-0 start-50 translate-middle-x"
+      :class="{
+        'btn-secondary': !canStart,
+        'btn-success': canStart,
+      }"
     >
       Start Game
     </button>
