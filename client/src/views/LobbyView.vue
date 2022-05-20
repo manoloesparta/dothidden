@@ -85,6 +85,8 @@ export default {
     return {
       socket: undefined,
 
+      left: false,
+
       error: "",
       starting_game: false,
       kicking_user: false,
@@ -123,6 +125,7 @@ export default {
     this.socket.on("lobby.update", (e) => {
       if (e.lobby == this.lobby_id) {
         if (!e.names.includes(this.user)) {
+          this.left = true;
           this.$router.push("/");
         }
         this.usernames = (e.names || []).filter(
@@ -230,7 +233,7 @@ export default {
       return this.confirmLeave();
     },
     beforeWindowUnload(e) {
-      if (this.confirmStayInLobby()) {
+      if (!this.left || this.confirmStayInLobby()) {
         e.preventDefault();
         e.returnValue = "";
       }
@@ -243,7 +246,7 @@ export default {
     window.removeEventListener("beforeunload", this.beforeWindowUnload);
   },
   beforeRouteLeave(to, from, next) {
-    if (this.confirmStayInLobby()) {
+    if (this.left || this.confirmStayInLobby()) {
       this.usernameModal.hide();
       next();
     } else {
