@@ -80,10 +80,6 @@ export default {
       type: String,
       default: "",
     },
-    apiBaseUrl: {
-      type: String,
-      default: "https://api.hidenseek.manoloesparta.com",
-    },
   },
   data() {
     return {
@@ -122,7 +118,7 @@ export default {
       }
     }
 
-    this.socket = io("wss://api.hidenseek.manoloesparta.com");
+    this.socket = io(process.env.VUE_APP_SOCKET_URL);
 
     this.socket.on("lobby.update", (e) => {
       if (e.lobby == this.lobby_id) {
@@ -148,7 +144,7 @@ export default {
       if (this.lobby_id.length === 5 && !this.is_host) {
         console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
         let response = await fetch(
-          `${this.apiBaseUrl}/game/${this.lobby_id}/players/${username}`,
+          `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players/${username}`,
           {
             method: "POST",
           }
@@ -161,7 +157,7 @@ export default {
       } else if (this.lobby_id.length === 0 && this.is_host) {
         console.log(`Creating lobby as ${username}...`);
 
-        let response = await fetch(`${this.apiBaseUrl}/game`, {
+        let response = await fetch(`${process.env.VUE_APP_API_URL}/game`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -185,9 +181,12 @@ export default {
     async closeLobby() {
       if (this.is_host) {
         console.log(`Closing lobby #${this.lobby_id}...`);
-        let response = await fetch(`${this.apiBaseUrl}/game/${this.lobby_id}`, {
-          method: "DELETE",
-        });
+        let response = await fetch(
+          `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (response.status !== 204) {
           this.error = "Couldn't close game!";
@@ -205,7 +204,7 @@ export default {
       this.kicking_user = true;
 
       let response = await fetch(
-        `${this.apiBaseUrl}/game/${this.lobby_id}/players/${user}`,
+        `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players/${user}`,
         {
           method: "DELETE",
         }
