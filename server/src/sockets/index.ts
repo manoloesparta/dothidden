@@ -1,5 +1,10 @@
 import http from 'http'
 import socketio from 'socket.io'
+import { Lobby } from '../domain/Lobby';
+import { LobbyManager } from '../domain/LobbyManager';
+import { Hider } from '../domain/Players';
+
+const lobbies: LobbyManager = LobbyManager.getInstance();
 
 export class SocketService {
 
@@ -11,6 +16,18 @@ export class SocketService {
 
     io.on('connection', (socket) => {
       socket.on('game.join', (data) => socket.join(data.gameId));
+
+      socket.on('player.position', (data) => {
+        const lobby: Lobby = lobbies.getLobby(data.lobbyId);
+        const { x, y } = data.player.position;
+
+        if(data.player.type === 'hider') {
+          const player: Hider = lobby.game.hiders.find((hider) => hider.name == data.player.name);
+          player.moveTo(x, y);
+        } else {
+          lobby.game.seeker.moveTo(x, y)  ;
+        }
+      })
     });
 
     this.io = io;
@@ -28,5 +45,3 @@ export class SocketService {
     }
   }
 }
-
-module.exports = { SocketService };

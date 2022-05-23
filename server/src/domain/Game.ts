@@ -2,8 +2,8 @@ import { Seeker, Hider, Player } from './Players'
 import { GameEventsManager } from './GameEventsManager';
 
 export class Game {
-  private seeker: Seeker;
-  private hiders: Array<Hider>;
+  public seeker: Seeker;
+  public hiders: Array<Hider>;
   private eventsManager: GameEventsManager;
 
   private aliveHiders: Array<Hider>;
@@ -19,13 +19,15 @@ export class Game {
   }
 
   public addHider(player: Player) {
-    const hider = new Hider(player.name, player.x, player.y);
+    const { name, x, y, emitter } = player
+    const hider = new Hider(name, x, y, emitter);
     this.hiders.push(hider);
     this.eventsManager.subscribe('hide', hider);
   }
 
-  public addSeeker(player) {
-    const seeker = new Seeker(player.name, player.x, player.y);
+  public addSeeker(player: Player) {
+    const { name, x, y, emitter } = player
+    const seeker = new Seeker(name, x, y, emitter);
     this.seeker = seeker;
     this.eventsManager.subscribe('seek', seeker);
   }

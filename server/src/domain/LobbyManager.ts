@@ -1,6 +1,7 @@
 import { Lobby } from './Lobby'
 import { NotFoundException } from '../utils/exceptions'
 import { randString } from '../utils/utils'
+import { SocketService } from '../sockets';
 
 
 export class LobbyManager {
@@ -20,12 +21,12 @@ export class LobbyManager {
     this.lobbies = new Map<string, Lobby>();
   }
 
-  public createLobby(host: string): string {
+  public createLobby(host: string, io: SocketService): string {
     let lobbyId: string = randString(5);
     while (this.checkExists(lobbyId)) {
       lobbyId = randString(5);
     }
-    this.lobbies.set(lobbyId, new Lobby(lobbyId, host));
+    this.lobbies.set(lobbyId, new Lobby(lobbyId, host, io));
     return lobbyId;
   }
 

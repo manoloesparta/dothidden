@@ -9,10 +9,11 @@ const router: Router = Router();
 const currentLobbies: LobbyManager = LobbyManager.getInstance();
 
 router.post('/game', (req, res) => {
+  const io: SocketService = req.app.get('socketService');
   handleRequestExceptions(res, () => {
     checkBody(req, 'host');
 
-    const lobbyId = currentLobbies.createLobby(req.body.host);
+    const lobbyId = currentLobbies.createLobby(req.body.host, io);
 
     res.status(200).send({ code: lobbyId });
   })
@@ -37,7 +38,7 @@ router.delete('/game/:gameId', (req, res) => {
     const { gameId } = req.params;
     currentLobbies.removeLobby(gameId)
 
-    io.emit('lobby.update', { names: [], lobby: gameId })
+    io.roomEmit(gameId, 'lobby.update', {names: []})
     res.sendStatus(204);
   })
 });

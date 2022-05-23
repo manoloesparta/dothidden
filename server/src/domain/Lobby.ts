@@ -2,6 +2,7 @@ import { Game } from './Game';
 import { Player } from './Players';
 
 import { ConflictException, NotFoundException } from '../utils/exceptions';
+import { SocketService } from '../sockets';
 
 export class Lobby {
 
@@ -10,14 +11,16 @@ export class Lobby {
   isGameRunning: boolean;
   host: string;
   players: Array<Player>
+  emitter: any;
 
-  constructor(lobbyId: string, host: string) {
+  constructor(lobbyId: string, host: string, emitter: SocketService) {
     this.lobbyId = lobbyId;
     this.isGameRunning = false;
 
     this.host = host;
     this.players = [];
     this.addPlayer(host);
+    this.emitter = (event: string, message: string) => emitter.roomEmit(lobbyId, event, message)
   }
 
   private findPlayer(playerName: string): Player {
@@ -38,7 +41,7 @@ export class Lobby {
         throw new ConflictException('Player nickname already in use');
       }
     });
-    this.players.push(new Player(playerName, 0, 0));
+    this.players.push(new Player(playerName, 0, 0, this.emitter));
   }
 
   removePlayer(playerName: string) {
