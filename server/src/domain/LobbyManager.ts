@@ -1,43 +1,47 @@
-import { Game } from './Game';
-import {Lobby} from './Lobby'
-import {NotFoundException} from '../utils/exceptions'
-import {randString} from '../utils/utils'
+import { Lobby } from './Lobby'
+import { NotFoundException } from '../utils/exceptions'
+import { randString } from '../utils/utils'
+import { SocketService } from '../sockets';
 
 
-class LobbyManager {
+export class LobbyManager {
 
-  lobbies: Map<string, Lobby>;
+  private lobbies: Map<string, Lobby>;
 
-  constructor() {
+  private static instance: LobbyManager;
+
+  public static getInstance(): LobbyManager {
+    if(!LobbyManager.instance) {
+      LobbyManager.instance = new LobbyManager();
+    }
+    return LobbyManager.instance;
+  }
+
+  private constructor() {
     this.lobbies = new Map<string, Lobby>();
   }
 
-  createLobby(host: string): string {
+  public createLobby(host: string, io: SocketService): string {
     let lobbyId: string = randString(5);
     while (this.checkExists(lobbyId)) {
       lobbyId = randString(5);
     }
-    this.lobbies.set(lobbyId, new Lobby(lobbyId, host));
+    this.lobbies.set(lobbyId, new Lobby(lobbyId, host, io));
     return lobbyId;
   }
 
-  checkExists(lobbyId: string): boolean {
+  private checkExists(lobbyId: string): boolean {
     return this.lobbies.has(lobbyId)
   }
 
-  getLobby(lobbyId: string): Lobby {
+  public getLobby(lobbyId: string): Lobby {
     if (this.checkExists(lobbyId)) {
       return this.lobbies.get(lobbyId);
     }
     throw new NotFoundException(`GameId: ${lobbyId} not found`);
   }
 
-  removeLobby(lobbyId: string) {
+  public removeLobby(lobbyId: string) {
     this.lobbies.delete(lobbyId)
   }
 }
-
-const currentLobbies = new LobbyManager();
-Object.freeze(currentLobbies);
-
-export { currentLobbies };
