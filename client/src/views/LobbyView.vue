@@ -123,6 +123,8 @@ export default {
     },
   },
   mounted() {
+    console.log(this.is_host, this.lobby_id, this.user);
+
     this.usernameModal = new bootstrap.Modal(
       document.getElementById("UsernameModal")
     );
@@ -134,6 +136,8 @@ export default {
         this.usernameModal.show();
       }
     }
+
+    this.getUsers();
 
     this.socket = io(process.env.VUE_APP_SOCKET_URL);
 
@@ -150,6 +154,24 @@ export default {
     });
   },
   methods: {
+    async getUsers() {
+      let response = await fetch(
+        `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (response.status === 200) {
+        let json_response = await response.json();
+        this.usernames = (json_response.names || []).filter(
+          (username) => username !== this.getUser
+        );
+      } else {
+        this.usernames = [];
+      }
+    },
+
     async joinLobby(username) {
       this.username = username;
 
@@ -254,6 +276,7 @@ export default {
       this.error = "Couldn't start game!";
       this.starting_game = false;
     },
+
     confirmLeave() {
       return window.confirm(
         `Do you really want to ${this.is_host ? "close" : "leave"} the lobby?`
@@ -276,8 +299,8 @@ export default {
     window.removeEventListener("beforeunload", this.beforeWindowUnload);
   },
   beforeRouteLeave(to, from, next) {
+    this.usernameModal.hide();
     if (this.canLeave || this.confirmStayInLobby()) {
-      this.usernameModal.hide();
       next();
     } else {
       next(false);
