@@ -31,7 +31,7 @@ export class Hider extends Player {
     this.alive = true;
   }
 
-  update(seeker: Seeker) {
+  public update(seeker: Seeker) {
     const distance = this.proximity(seeker);
     if (distance < 3) {
       this.alive = false;
@@ -42,7 +42,7 @@ export class Hider extends Player {
 }
 
 export class Seeker extends Player {
-  update(hiders: Array<Hider>) {
+  public update(hiders: Array<Hider>) {
     const encode = (index) => String.fromCharCode(index + 65);
     const message: Map<string, string> = new Map<string, string>();
 

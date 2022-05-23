@@ -6,17 +6,14 @@ import { SocketService } from '../sockets';
 
 export class Lobby {
 
-  lobbyId: string;
-  game: Game
-  isGameRunning: boolean;
-  host: string;
-  players: Array<Player>
-  emitter: any;
+  public lobbyId: string;
+  public game: Game
+  public host: string;
+  private players: Array<Player>
+  private emitter: any;
 
   constructor(lobbyId: string, host: string, emitter: SocketService) {
     this.lobbyId = lobbyId;
-    this.isGameRunning = false;
-
     this.host = host;
     this.players = [];
     this.addPlayer(host);
@@ -31,11 +28,11 @@ export class Lobby {
     return found
   }
 
-  getPlayerNames(): Array<string> {
+  public getPlayerNames(): Array<string> {
     return this.players.map((player) => player.name);
   }
 
-  addPlayer(playerName: string) {
+  public addPlayer(playerName: string) {
     this.players.forEach((player) => {
       if (player.name === playerName) {
         throw new ConflictException('Player nickname already in use');
@@ -44,12 +41,12 @@ export class Lobby {
     this.players.push(new Player(playerName, 0, 0, this.emitter));
   }
 
-  removePlayer(playerName: string) {
+  public removePlayer(playerName: string) {
     this.findPlayer(playerName);
     this.players = this.players.filter((player) => player.name !== playerName);
   }
 
-  getPlayer(playerName: string): Player {
+  public getPlayer(playerName: string): Player {
     return this.findPlayer(playerName);
   }
 }
