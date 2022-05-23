@@ -1,7 +1,7 @@
 import express, { Express } from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
-import http, {Server} from 'http'
+import http, { Server } from 'http'
 
 import { GameRoutes } from './game';
 import { PlayerRoutes } from './players';

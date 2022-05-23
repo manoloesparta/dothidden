@@ -11,7 +11,7 @@ export class Lobby {
   host: string;
   players: Array<Player>
 
-  constructor(lobbyId, host) {
+  constructor(lobbyId: string, host: string) {
     this.lobbyId = lobbyId;
     this.isGameRunning = false;
 
@@ -47,7 +47,6 @@ export class Lobby {
   }
 
   getPlayer(playerName: string): Player {
-    const player: Player = this.findPlayer(playerName);
-    return player;
+    return this.findPlayer(playerName);
   }
 }

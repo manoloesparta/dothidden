@@ -3,22 +3,28 @@ import socketio from 'socket.io'
 
 export class SocketService {
 
-  io: socketio.Server;
+  private io: socketio.Server;
 
-  constructor(server: http.Server) {
+  public constructor(server: http.Server) {
     const options = { cors: { origin: '*' } };
     const io: socketio.Server = new socketio.Server(server, options);
 
     io.on('connection', (socket) => {
-      console.log('user connected');
+      socket.on('game.join', (data) => socket.join(data.gameId));
     });
 
     this.io = io;
   }
 
-  emit(event: string, body: any) {
+  public emit(event: string, body: any) {
     if (body) {
       this.io.emit(event, body);
+    }
+  }
+
+  public roomEmit(room: string, event: string, body: any) {
+    if(body) {
+      this.io.to(room).emit(event, body);
     }
   }
 }
