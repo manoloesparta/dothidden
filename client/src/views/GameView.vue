@@ -29,6 +29,44 @@
         </h1>
       </div>
     </div>
+
+    <div v-if="state === 'results'" class="w-100 h-100 pt-5">
+      <div class="w-100 h-100">
+        <nav class="navbar navbar-light bg-light fixed-top">
+          <div class="container-fluid">
+            <a class="navbar-brand">DotHidden #{{ lobby_id }}</a>
+            <div class="d-flex">
+              <button
+                :disabled="isBusy"
+                @click="toLobby"
+                type="button"
+                class="btn btn-danger"
+              >
+                Lobby
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <div class="card w-100 h-100" style="width: 18rem">
+          <ul class="list-group list-group-flush">
+            <li
+              v-for="result in results"
+              :key="result[0]"
+              class="list-group-item"
+            >
+              <div class="d-flex">
+                <span class="my-auto">{{ result[0] }}</span>
+
+                <div class="ms-auto">
+                  <i>{{ padTime(result[1]) }}</i>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -54,6 +92,7 @@ export default {
       // Game States:
       // hidding
       // playing
+      // results
       state: "hidding",
 
       // Game Roles
@@ -63,9 +102,14 @@ export default {
       distance: 0.0,
       hide_time: 10,
       game_time: 10,
+
+      results: [],
     };
   },
   computed: {
+    isBusy() {
+      return this.game_time > 0;
+    },
     backgroundStyle() {
       let bgc = "rgb(255, 255, 255)";
       if (this.state == "hidding") bgc = "#9932cc";
@@ -82,16 +126,58 @@ export default {
       return { backgroundColor: bgc };
     },
     game_time_text() {
-      let minutes = Math.floor(this.game_time / 60);
-      let seconds = this.game_time % 60;
+      return this.padTime(this.game_time);
+    },
+  },
+  methods: {
+    padTime(seconds) {
+      let minutes = Math.floor(seconds / 60);
+      seconds = seconds % 60;
       return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
         2,
         "0"
       )}`;
     },
+
+    async getResults() {
+      let response = await fetch(
+        `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (response.status === 200) {
+        let json_response = await response.json();
+        let results = json_response.names || [];
+        for (let index = 0; index < results.length; index++) {
+          const username = results[index];
+          results[index] = [
+            username, // username
+            Math.floor(Math.random() * 7), // caught time
+          ];
+        }
+        this.results = results;
+      } else {
+        this.results = [];
+      }
+    },
+
+    toLobby() {
+      console.log(`Going to lobby #${this.lobby_id} as ${this.user}...`);
+      this.$router.push({
+        name: `lobby`,
+        params: {
+          is_host: this.is_host,
+          lobby_id: this.lobby_id,
+          user: this.user,
+        },
+      });
+    },
   },
   mounted() {
     // USED TO SIMUlATE GAME ROUND; REMOVE FOR PRODUCTION
+    this.state = "hidding";
     const loop = setInterval(() => {
       if (this.state == "hidding") {
         this.hide_time -= 1;
@@ -102,18 +188,9 @@ export default {
         this.distance += 0.1 * this.delta;
         this.game_time -= 1;
         if (this.game_time <= 0) {
-          console.log(
-            `Lobby #${this.lobby_id} finished game as ${this.user}...`
-          );
           clearInterval(loop);
-          this.$router.push({
-            name: `lobby`,
-            params: {
-              is_host: this.is_host,
-              lobby_id: this.lobby_id,
-              user: this.user,
-            },
-          });
+          this.state = "results";
+          this.getResults();
         }
         console.log(this.distance);
       }
