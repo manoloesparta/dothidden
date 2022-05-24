@@ -5,8 +5,8 @@ export class Game {
   public seeker: Seeker;
   public hiders: Array<Hider>;
   private eventsManager: GameEventsManager;
-
   private aliveHiders: Array<Hider>;
+  private emitter: any;
 
   private seekInterval: NodeJS.Timer;
   private timeoutWin: NodeJS.Timer;
@@ -20,6 +20,9 @@ export class Game {
 
   public addHider(player: Player) {
     const { name, x, y, emitter } = player
+    if(!this.emitter) {
+      this.emitter = emitter;
+    }
     const hider = new Hider(name, x, y, emitter);
     this.hiders.push(hider);
     this.eventsManager.subscribe('hide', hider);
@@ -27,6 +30,9 @@ export class Game {
 
   public addSeeker(player: Player) {
     const { name, x, y, emitter } = player
+    if(!this.emitter) {
+      this.emitter = emitter;
+    }
     const seeker = new Seeker(name, x, y, emitter);
     this.seeker = seeker;
     this.eventsManager.subscribe('seek', seeker);
@@ -62,12 +68,14 @@ export class Game {
       this.stop();
       console.log('Hiders wins!');
     }, 30 * 1000);
+    this.emitter('game.start', { status: 'start' })
   }
 
   private stop() {
-    clearTimeout(this.timeoutWin);
     clearInterval(this.seekInterval);
     clearInterval(this.hideInterval);
     clearInterval(this.checkInterval);
+    clearTimeout(this.timeoutWin);
+    this.emitter('game.stop', { status: 'stop' })
   }
 }

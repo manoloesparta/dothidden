@@ -9,7 +9,7 @@ const router: Router = Router();
 const currentLobbies: LobbyManager = LobbyManager.getInstance();
 
 router.post('/game', (req, res) => {
-  const io: SocketService = req.app.get('socketService');
+  const io: SocketService = req.app.get('socket-service');
   handleRequestExceptions(res, () => {
     checkBody(req, 'host');
 
@@ -31,7 +31,7 @@ router.get('/game/:gameId/host', (req, res) => {
 });
 
 router.delete('/game/:gameId', (req, res) => {
-  const io: SocketService = req.app.get('socketService');
+  const io: SocketService = req.app.get('socket-service');
   handleRequestExceptions(res, () => {
     checkPathParams(req, 'gameId');
 

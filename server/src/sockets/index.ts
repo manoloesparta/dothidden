@@ -15,19 +15,11 @@ export class SocketService {
     const io: socketio.Server = new socketio.Server(server, options);
 
     io.on('connection', (socket) => {
-      socket.on('game.join', (data) => socket.join(data.gameId));
+      socket.on('game.join', (data) => socket.join(data.lobbyId));
 
-      socket.on('player.position', (data) => {
-        const lobby: Lobby = lobbies.getLobby(data.lobbyId);
-        const { x, y } = data.player.position;
+      socket.on('player.position', playerPositionHandler);
 
-        if(data.player.type === 'hider') {
-          const player: Hider = lobby.game.hiders.find((hider) => hider.name == data.player.name);
-          player.moveTo(x, y);
-        } else {
-          lobby.game.seeker.moveTo(x, y)  ;
-        }
-      })
+      socket.on('game.start', startGameHandler);
     });
 
     this.io = io;
@@ -44,4 +36,21 @@ export class SocketService {
       this.io.to(room).emit(event, body);
     }
   }
+}
+
+const playerPositionHandler = (data) => {
+  const lobby: Lobby = lobbies.getLobby(data.lobbyId);
+  const { x, y } = data.player.position;
+
+  if(data.player.type === 'hider') {
+    const player: Hider = lobby.game.hiders.find((hider) => hider.name == data.player.name);
+    player.moveTo(x, y);
+  } else {
+    lobby.game.seeker.moveTo(x, y)  ;
+  }
+}
+
+const startGameHandler = (data) => {
+  const lobby: Lobby = lobbies.getLobby(data.lobbyId);
+  lobby.game.start();
 }

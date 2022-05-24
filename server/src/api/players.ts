@@ -10,7 +10,7 @@ const router: Router = Router();
 const currentLobbies: LobbyManager = LobbyManager.getInstance();
 
 router.post('/game/:gameId/players/:playerNick', (req, res) => {
-  const io: SocketService = req.app.get('socketService');
+  const io: SocketService = req.app.get('socket-service');
   handleRequestExceptions(res, () => {
     checkPathParams(req, 'gameId', 'playerNick');
 
@@ -24,7 +24,7 @@ router.post('/game/:gameId/players/:playerNick', (req, res) => {
 });
 
 router.delete('/game/:gameId/players/:playerNick', (req, res) => {
-  const io: SocketService = req.app.get('socketService');
+  const io: SocketService = req.app.get('socket-service');
   handleRequestExceptions(res, () => {
     checkPathParams(req, 'gameId', 'playerNick');
 

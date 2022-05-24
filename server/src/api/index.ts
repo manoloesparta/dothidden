@@ -22,7 +22,7 @@ export const createApp = () => {
   app.use(GameRoutes);
   app.use(PlayerRoutes);
 
-  app.set('socketService', new SocketService(server));
+  app.set('socket-service', new SocketService(server));
 
   return server;
 };

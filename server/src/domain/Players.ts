@@ -35,7 +35,7 @@ export class Hider extends Player {
     const distance = this.proximity(seeker);
     if (distance < 3) {
       this.alive = false;
-      this.emitter('player.dead', { name: this.name })
+      this.emitter('hider.dead', { name: this.name })
     }
     this.emitter('hider.update', { seekerDistance: distance.toFixed(2) })
   }
