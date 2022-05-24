@@ -17,7 +17,7 @@
     </nav>
 
     <div class="card w-100" style="width: 18rem">
-      <div class="card-header">{{ user }}</div>
+      <div class="card-header">{{ getUser }}</div>
 
       <ul class="list-group list-group-flush">
         <li
@@ -48,7 +48,11 @@
       :disabled="isBusy || !canStart"
       @click="startGame"
       type="button"
-      class="btn btn-secondary btn-lg my-2 position-fixed bottom-0 start-50 translate-middle-x"
+      class="btn btn-lg my-2 position-fixed bottom-0 start-50 translate-middle-x"
+      :class="{
+        'btn-secondary': !canStart,
+        'btn-success': canStart,
+      }"
     >
       Start Game
     </button>
@@ -80,14 +84,16 @@ export default {
       type: String,
       default: "",
     },
-    apiBaseUrl: {
+    user: {
       type: String,
-      default: "https://api.hidenseek.manoloesparta.com",
+      default: "",
     },
   },
   data() {
     return {
       socket: undefined,
+
+      left: false,
 
       error: "",
       starting_game: false,
@@ -95,7 +101,7 @@ export default {
 
       usernameModal: undefined,
 
-      user: "",
+      username: "",
       usernames: [],
       lobbyIdCopy: this.lobby_id,
     };
@@ -108,13 +114,22 @@ export default {
     canStart() {
       return this.usernames.length >= 1;
     },
+    canLeave() {
+      return this.left || this.getUser.length == 0;
+    },
+
+    getUser() {
+      return this.user.length > 0 ? this.user : this.username;
+    },
   },
   mounted() {
+    console.log(this.is_host, this.lobby_id, this.user);
+
     this.usernameModal = new bootstrap.Modal(
       document.getElementById("UsernameModal")
     );
 
-    if (this.user.length == 0) {
+    if (this.getUser.length == 0) {
       if (this.lobby_id.length !== 5 && !this.is_host) {
         this.$router.push("/");
       } else {
@@ -122,33 +137,50 @@ export default {
       }
     }
 
-    this.socket = io("wss://api.hidenseek.manoloesparta.com");
+    this.getUsers();
+
+    this.socket = io(process.env.VUE_APP_SOCKET_URL);
 
     this.socket.on("lobby.update", (e) => {
       if (e.lobby == this.lobby_id) {
-        if (!e.names.includes(this.user)) {
-          //this.$router.replace({ name: "main_menu", force: true });
-          this.usernameModal.hide();
-          this.lobbyIdCopy = "";
-          window.location = "/";
-          //this.$router.go();
+        if (!e.names.includes(this.getUser)) {
+          this.left = true;
+          this.$router.push("/");
         }
         this.usernames = (e.names || []).filter(
-          (username) => username !== this.user
+          (username) => username !== this.getUser
         );
       }
     });
   },
   methods: {
+    async getUsers() {
+      let response = await fetch(
+        `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (response.status === 200) {
+        let json_response = await response.json();
+        this.usernames = (json_response.names || []).filter(
+          (username) => username !== this.getUser
+        );
+      } else {
+        this.usernames = [];
+      }
+    },
+
     async joinLobby(username) {
-      this.user = username;
+      this.username = username;
 
       let lobby_id = this.lobby_id;
 
       if (this.lobby_id.length === 5 && !this.is_host) {
         console.log(`Joining lobby #${this.lobby_id} as ${username}...`);
         let response = await fetch(
-          `${this.apiBaseUrl}/game/${this.lobby_id}/players/${username}`,
+          `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players/${username}`,
           {
             method: "POST",
           }
@@ -161,7 +193,7 @@ export default {
       } else if (this.lobby_id.length === 0 && this.is_host) {
         console.log(`Creating lobby as ${username}...`);
 
-        let response = await fetch(`${this.apiBaseUrl}/game`, {
+        let response = await fetch(`${process.env.VUE_APP_API_URL}/game`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -185,15 +217,18 @@ export default {
     async closeLobby() {
       if (this.is_host) {
         console.log(`Closing lobby #${this.lobby_id}...`);
-        let response = await fetch(`${this.apiBaseUrl}/game/${this.lobby_id}`, {
-          method: "DELETE",
-        });
+        let response = await fetch(
+          `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (response.status !== 204) {
           this.error = "Couldn't close game!";
         }
       } else {
-        this.kickUser(this.user);
+        this.kickUser(this.getUser);
         console.log(`Leaving lobby #${this.lobby_id}...`);
       }
 
@@ -205,7 +240,7 @@ export default {
       this.kicking_user = true;
 
       let response = await fetch(
-        `${this.apiBaseUrl}/game/${this.lobby_id}/players/${user}`,
+        `${process.env.VUE_APP_API_URL}/game/${this.lobby_id}/players/${user}`,
         {
           method: "DELETE",
         }
@@ -223,9 +258,25 @@ export default {
 
       this.starting_game = true;
 
+      // TODO POST to API the start of this lobbie's game
+
+      this.left = true;
+      console.log(
+        `Lobby #${this.lobby_id} starting game as ${this.getUser}...`
+      );
+      this.$router.push({
+        name: `lobby_game`,
+        params: {
+          is_host: this.is_host,
+          lobby_id: this.lobby_id,
+          user: this.getUser,
+        },
+      });
+
       this.error = "Couldn't start game!";
       this.starting_game = false;
     },
+
     confirmLeave() {
       return window.confirm(
         `Do you really want to ${this.is_host ? "close" : "leave"} the lobby?`
@@ -235,7 +286,7 @@ export default {
       return this.confirmLeave();
     },
     beforeWindowUnload(e) {
-      if (this.confirmStayInLobby()) {
+      if (!this.canLeave || this.confirmStayInLobby()) {
         e.preventDefault();
         e.returnValue = "";
       }
@@ -248,8 +299,8 @@ export default {
     window.removeEventListener("beforeunload", this.beforeWindowUnload);
   },
   beforeRouteLeave(to, from, next) {
-    if (this.confirmStayInLobby()) {
-      this.usernameModal.hide();
+    this.usernameModal.hide();
+    if (this.canLeave || this.confirmStayInLobby()) {
       next();
     } else {
       next(false);
