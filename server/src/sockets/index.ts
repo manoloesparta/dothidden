@@ -52,5 +52,5 @@ const playerPositionHandler = (data) => {
 
 const startGameHandler = (data) => {
   const lobby: Lobby = lobbies.getLobby(data.lobbyId);
-  lobby.game.start();
+  lobby.startGame();
 }

@@ -49,7 +49,7 @@ export class Game {
     const alives = this.hiders.filter((item) => item.alive);
     if (alives.length === 0) {
       this.stop();
-      console.log(`${this.seeker.name} wins!`);
+      this.emitter('game.winner', {winner: this.seeker.name})
     }
   }
 
@@ -66,12 +66,13 @@ export class Game {
     }, 1 * 1000);
     this.timeoutWin = setTimeout(() => {
       this.stop();
+      this.emitter('game.winner', {winner: this.aliveHiders.map((hider) => hider.name)})
       console.log('Hiders wins!');
     }, 30 * 1000);
     this.emitter('game.start', { status: 'start' })
   }
 
-  private stop() {
+  public stop() {
     clearInterval(this.seekInterval);
     clearInterval(this.hideInterval);
     clearInterval(this.checkInterval);
