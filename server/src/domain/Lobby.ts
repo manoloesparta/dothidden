@@ -3,6 +3,7 @@ import { Player } from './Players';
 
 import { ConflictException, NotFoundException } from '../utils/exceptions';
 import { SocketService } from '../sockets';
+import { randInt } from '../utils/utils';
 
 export class Lobby {
 
@@ -26,6 +27,15 @@ export class Lobby {
       throw new NotFoundException('Player not found')
     }
     return found
+  }
+
+  public startGame() {
+    this.game = new Game();
+    const hiderIndex = randInt(0, this.players.length);
+    this.game.addSeeker(this.players[hiderIndex]);
+    this.players.splice(hiderIndex, 1);
+    this.players.forEach((player) => this.game.addHider(player));
+    this.game.start();
   }
 
   public getPlayerNames(): Array<string> {
