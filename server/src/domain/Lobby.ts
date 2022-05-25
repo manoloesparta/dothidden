@@ -10,15 +10,15 @@ export class Lobby {
   public lobbyId: string;
   public game: Game
   public host: string;
+  public emitter: any;
   private players: Array<Player>
-  private emitter: any;
 
   constructor(lobbyId: string, host: string, emitter: SocketService) {
     this.lobbyId = lobbyId;
     this.host = host;
     this.players = [];
-    this.addPlayer(host);
     this.emitter = (event: string, message: string) => emitter.roomEmit(lobbyId, event, message)
+    this.addPlayer(host);
   }
 
   private findPlayer(playerName: string): Player {
@@ -31,10 +31,7 @@ export class Lobby {
 
   public startGame() {
     this.game = new Game();
-    const hiderIndex = randInt(0, this.players.length);
-    this.game.addSeeker(this.players[hiderIndex]);
-    this.players.splice(hiderIndex, 1);
-    this.players.forEach((player) => this.game.addHider(player));
+    this.assignRoles();
     this.game.start();
   }
 
@@ -58,5 +55,13 @@ export class Lobby {
 
   public getPlayer(playerName: string): Player {
     return this.findPlayer(playerName);
+  }
+
+  public assignRoles() {
+    const hiderIndex = randInt(0, this.players.length);
+    this.game.addSeeker(this.players[hiderIndex]);
+    const playersCopy = [... this.players];
+    playersCopy.splice(hiderIndex, 1);
+    playersCopy.forEach((player) => this.game.addHider(player));
   }
 }

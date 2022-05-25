@@ -24,7 +24,7 @@ export class Player {
 }
 
 export class Hider extends Player {
-  alive: boolean;
+  public alive: boolean;
   
   constructor(name: string, x: number, y: number, emitter: any) {
     super(name, x, y, emitter);
@@ -33,11 +33,20 @@ export class Hider extends Player {
 
   public update(seeker: Seeker) {
     const distance = this.proximity(seeker);
-    if (distance < 3) {
+    if (distance < 0) {
       this.alive = false;
       this.emitter('hider.dead', { name: this.name })
     }
     this.emitter('hider.update', { seekerDistance: distance.toFixed(2) })
+  }
+
+  public static fromPlayer(player: Player): Hider {
+    return new Hider(
+      player.name,
+      player.x,
+      player.y,
+      player.emitter
+    );
   }
 }
 
@@ -52,6 +61,15 @@ export class Seeker extends Player {
       message.set(name, distance)
     }
 
-   this.emitter('seeker.update', { hiderDistance: message }) 
+    this.emitter('seeker.update', { hiderDistance: Object.fromEntries(message) }) 
+  }
+
+  public static fromPlayer(player: Player): Seeker {
+    return new Seeker(
+      player.name, 
+      player.x, 
+      player.y, 
+      player.emitter
+    );
   }
 }

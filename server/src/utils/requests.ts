@@ -30,3 +30,11 @@ export const handleRequestExceptions = (res: Response, callback: any) => {
     }
   }
 };
+
+export const handleSocketException = (data: any, callback: any) => {
+  try {
+    callback(data);
+  } catch(error) {
+    logger.error(error);
+  }
+};

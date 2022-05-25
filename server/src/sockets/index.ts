@@ -1,8 +1,11 @@
+import e from 'cors';
 import http from 'http'
 import socketio from 'socket.io'
 import { Lobby } from '../domain/Lobby';
 import { LobbyManager } from '../domain/LobbyManager';
 import { Hider } from '../domain/Players';
+import { handleSocketException } from '../utils/requests';
+import { logger } from '../utils/utils';
 
 const lobbies: LobbyManager = LobbyManager.getInstance();
 
@@ -16,10 +19,9 @@ export class SocketService {
 
     io.on('connection', (socket) => {
       socket.on('game.join', (data) => socket.join(data.lobbyId));
-
-      socket.on('player.position', playerPositionHandler);
-
-      socket.on('game.start', startGameHandler);
+      socket.on('player.position', (data) => handleSocketException(data, playerPositionHandler));
+      socket.on('game.start', (data) => handleSocketException(data, startGameHandler));
+      socket.on('error', (error) => logger.error(error));
     });
 
     this.io = io;
@@ -48,6 +50,7 @@ const playerPositionHandler = (data) => {
   } else {
     lobby.game.seeker.moveTo(x, y)  ;
   }
+  console.log(`Player ${data.player.name} in lobby ${lobby.lobbyId} moved to ${x},${y}`)
 }
 
 const startGameHandler = (data) => {
