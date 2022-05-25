@@ -86,6 +86,9 @@ export default {
       type: String,
       default: "",
     },
+    socket: {
+      default: window.socket,
+    },
   },
   data() {
     return {
@@ -101,7 +104,7 @@ export default {
       role: "hidder",
       distance: 0.0,
       hide_time: 10,
-      game_time: 10,
+      game_time: 30,
 
       results: [],
     };
@@ -137,6 +140,24 @@ export default {
         2,
         "0"
       )}`;
+    },
+
+    async getLocation() {
+      navigator.geolocation.getCurrentPosition((location) => {
+        console.log(location.coords);
+        console.log(this.lobby_id);
+        this.socket.emit("player.position", {
+          lobbyId: this.lobby_id,
+          player: {
+            name: this.user,
+            type: this.role,
+            position: {
+              x: location.coords.longitude,
+              y: location.coords.latitude,
+            },
+          },
+        });
+      });
     },
 
     async getResults() {
@@ -181,8 +202,11 @@ export default {
     const loop = setInterval(() => {
       if (this.state == "hidding") {
         this.hide_time -= 1;
-        if (this.hide_time <= 0) this.state = "playing";
+        if (this.hide_time <= 0) {
+          this.state = "playing";
+        }
       } else if (this.state == "playing") {
+        this.getLocation();
         if (this.distance >= 1.0) this.delta = -1;
         else if (this.distance <= 0.0) this.delta = 1;
         this.distance += 0.1 * this.delta;
