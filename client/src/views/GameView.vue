@@ -101,8 +101,9 @@ export default {
       // Game Roles
       // hidder
       // seeker
-      role: "hidder",
+      role: "",
       distance: 0.0,
+      prevDistance: "",
       hide_time: 10,
       game_time: 30,
 
@@ -142,10 +143,20 @@ export default {
       )}`;
     },
 
+    updateHidderLocation() {
+      this.socket.on("hider.update", (e) => {
+        this.prevDistance = e.seekerDistance;
+      });
+    },
+
+    updateSeekerLocation() {
+      this.socket.on("seeker.update", (e) => {
+        this.prevDistance = e.hiderDistance;
+      });
+    },
+
     async getLocation() {
       navigator.geolocation.getCurrentPosition((location) => {
-        console.log(location.coords);
-        console.log(this.lobby_id);
         this.socket.emit("player.position", {
           lobbyId: this.lobby_id,
           player: {
@@ -199,6 +210,7 @@ export default {
   mounted() {
     // USED TO SIMUlATE GAME ROUND; REMOVE FOR PRODUCTION
     this.state = "hidding";
+    this.role = window.role;
     const loop = setInterval(() => {
       if (this.state == "hidding") {
         this.hide_time -= 1;
@@ -207,6 +219,17 @@ export default {
         }
       } else if (this.state == "playing") {
         this.getLocation();
+        if (this.role == "seeker") {
+          this.updateSeekerLocation();
+          setInterval(() => {
+            console.log(this.prevDistance);
+          }, 2 * 1000);
+        } else {
+          this.updateHidderLocation();
+          setInterval(() => {
+            console.log(this.prevDistance);
+          }, 4 * 1000);
+        }
         if (this.distance >= 1.0) this.delta = -1;
         else if (this.distance <= 0.0) this.delta = 1;
         this.distance += 0.1 * this.delta;
@@ -216,7 +239,6 @@ export default {
           this.state = "results";
           this.getResults();
         }
-        console.log(this.distance);
       }
     }, 1000);
   },

@@ -152,8 +152,15 @@ export default {
       );
     });
 
-    this.socket.on("game.start", () => {
+    this.socket.on("game.start", (e) => {
       this.left = true;
+      if (this.username == e.seeker) {
+        window.role = "seeker";
+      } else {
+        window.role = "hidder";
+      }
+      console.log(e.seeker);
+      console.log(this.username);
       console.log("socket gamee");
       this.$router.push({
         name: `lobby_game`,
