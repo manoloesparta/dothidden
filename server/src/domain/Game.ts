@@ -44,7 +44,7 @@ export class Game {
     const alives = this.hiders.filter((item) => item.alive);
     if (alives.length === 0) {
       this.stop();
-      this.roomEmitter('game.winner', { winner: this.seeker.name })
+      this.roomEmitter('game.winner', { message: 'Seeker wins!' })
     }
   }
 
@@ -61,7 +61,7 @@ export class Game {
     }, 1 * 1000);
     this.timeoutWin = setTimeout(() => {
       this.stop();
-      this.roomEmitter('game.winner', { winner: this.aliveHiders.map((hider) => hider.name) });
+      this.roomEmitter('game.winner', { message: 'Hiders win!' });
     }, 30 * 1000);
     this.roomEmitter('game.start', { seeker: this.seeker.name });
   }

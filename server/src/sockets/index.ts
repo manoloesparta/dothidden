@@ -8,6 +8,7 @@ import { handleSocketException } from '../utils/requests';
 import { logger } from '../utils/utils';
 
 const lobbies: LobbyManager = LobbyManager.getInstance();
+// normalizedX=(originalX-minX)/(maxX-minX)
 
 export class SocketService {
 
@@ -22,6 +23,7 @@ export class SocketService {
         socket.join(data.lobbyId)
         socket.join(`${data.lobbyId}.${data.username}`)
       });
+      socket.on('lobby.countdown', (data) => this.roomEmit(data.lobbyId, 'lobby.countdown', {time: data.time}))
       socket.on('player.position', (data) => handleSocketException(data, playerPositionHandler));
       socket.on('game.start', (data) => handleSocketException(data, startGameHandler));
       socket.on('error', (error) => logger.error(error));
