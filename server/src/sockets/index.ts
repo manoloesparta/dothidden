@@ -18,7 +18,10 @@ export class SocketService {
     const io: socketio.Server = new socketio.Server(server, options);
 
     io.on('connection', (socket) => {
-      socket.on('game.join', (data) => socket.join(data.lobbyId));
+      socket.on('game.join', (data) => {
+        socket.join(data.lobbyId)
+        socket.join(`${data.lobbyId}.${data.username}`)
+      });
       socket.on('player.position', (data) => handleSocketException(data, playerPositionHandler));
       socket.on('game.start', (data) => handleSocketException(data, startGameHandler));
       socket.on('error', (error) => logger.error(error));

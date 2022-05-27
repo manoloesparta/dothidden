@@ -10,14 +10,16 @@ export class Lobby {
   public lobbyId: string;
   public game: Game
   public host: string;
-  public emitter: any;
+  public roomEmitter: any;
+  public playerEmitter: any;
   private players: Array<Player>
 
   constructor(lobbyId: string, host: string, emitter: SocketService) {
     this.lobbyId = lobbyId;
     this.host = host;
     this.players = [];
-    this.emitter = (event: string, message: string) => emitter.roomEmit(lobbyId, event, message)
+    this.roomEmitter = (event: string, message: string) => emitter.roomEmit(lobbyId, event, message)
+    this.playerEmitter = (player: string, event: string, message: string) => emitter.roomEmit(`${lobbyId}.${player}`, event, message)
     this.addPlayer(host);
   }
 
@@ -30,7 +32,7 @@ export class Lobby {
   }
 
   public startGame() {
-    this.game = new Game();
+    this.game = new Game(this.roomEmitter, this.playerEmitter);
     this.assignRoles();
     this.game.start();
   }
@@ -45,7 +47,7 @@ export class Lobby {
         throw new ConflictException('Player nickname already in use');
       }
     });
-    this.players.push(new Player(playerName, 0, 0, this.emitter));
+    this.players.push(new Player(playerName, 0, 0));
   }
 
   public removePlayer(playerName: string) {
