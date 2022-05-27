@@ -209,7 +209,10 @@ export default {
           this.$refs.usernameModal.setError("Couldn't join session!");
           return;
         }
-        this.socket.emit("game.join", { lobbyId: lobby_id });
+        this.socket.emit("game.join", {
+          lobbyId: lobby_id,
+          username: username,
+        });
       } else if (this.lobby_id.length === 0 && this.is_host) {
         console.log(`Creating lobby as ${username}...`);
 
