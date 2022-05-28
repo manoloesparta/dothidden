@@ -146,7 +146,6 @@ state.user.socket.on('client.seeker.update', (event) => {
       hidersDistances.innerHTML += `<li>${hider.name}: dead</li>`
     }
   }
-  console.log(event.hiders)
 })
 
 state.user.socket.on('client.hider.dead', (event) => {

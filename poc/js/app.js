@@ -12,19 +12,18 @@ navigator.geolocation.getCurrentPosition(() => {})
 const startLocationUpdates = () => {
   return setInterval(() => {
     navigator.geolocation.getCurrentPosition((position) => {
-      state.user.socket.emit('server.player.position', 
-        {
-          lobbyId: state.lobby.current,
-          player: {
-            name: state.user.name,
-            type: state.player.role,
-            position: {
-              x: position.coords.latitude, 
-              y: position.coords.longitude
-            }
+      const payload = {
+        lobbyId: state.lobby.current,
+        player: {
+          name: state.user.username,
+          type: state.player.role,
+          position: {
+            x: position.coords.latitude, 
+            y: position.coords.longitude
           }
         }
-      );
+      }
+      state.user.socket.emit('server.player.position', payload);
     });
   }, 1 * 1000)
 }

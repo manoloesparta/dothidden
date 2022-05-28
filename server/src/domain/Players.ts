@@ -1,5 +1,3 @@
-import { randInt } from '../utils/utils';
-
 export class Player {
   public name: string;
   public x: number;

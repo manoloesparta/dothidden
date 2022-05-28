@@ -48,9 +48,10 @@ export class SocketService {
 }
 
 const normalizeCoordinates = ({ x, y }) => {
+  const diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2))
   return {
-    x: (x - minX) / (maxX - minX),
-    y: (y - minY) / (maxY - minY),
+    x: ((x - minX) / diagonal) * 100,
+    y: ((y - minY) / diagonal) * 100,
   } 
 }
 
