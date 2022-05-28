@@ -1,5 +1,5 @@
-const BASE_URL = 'https://api.hidenseek.manoloesparta.com/health'
-const WS_BASE_URL = 'wss://api.hidenseek.manoloesparta.com/health'
+const BASE_URL = 'https://api.hidenseek.manoloesparta.com'
+const WS_BASE_URL = 'wss://api.hidenseek.manoloesparta.com'
 
 // Socket connection
 const socket = io(WS_BASE_URL)
