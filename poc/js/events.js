@@ -139,7 +139,6 @@ state.user.socket.on('client.hider.update', (event) => {
 state.user.socket.on('client.seeker.update', (event) => {
   hidersDistances.innerHTML = ''
   for(const hider of event.hiders) {
-    console.log(hider)
     if(hider.alive) {
       hidersDistances.innerHTML += `<li>${hider.nickname}: ${hider.distance}</li>`
     } else {
