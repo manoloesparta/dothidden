@@ -25,32 +25,35 @@ export class Player {
 
 export class Hider extends Player {
   public alive: boolean;
+  public nickname: string;
   private playerEmitter: any;
   private rooEmitter: any;
   
-  constructor(name: string, x: number, y: number, playerEmitter: any, roomEmitter: any) {
+  constructor(name: string, x: number, y: number, playerEmitter: any, roomEmitter: any, nickname: string) {
     super(name, x, y);
     this.alive = true;
     this.playerEmitter = playerEmitter;
     this.rooEmitter = roomEmitter;
+    this.nickname = nickname;
   }
 
   public update(seeker: Seeker) {
-    const distance = randInt(0, 10);
-    if (distance < 3) {
+    const distance = this.proximity(seeker);
+    if (distance < 0.001) {
       this.alive = false;
-      this.rooEmitter('hider.dead', { name: this.name })
+      this.rooEmitter('client.hider.dead', { name: this.name })
     }
-    this.playerEmitter(this.name, 'hider.update', { seeker: distance.toFixed(2) })
+    this.playerEmitter(this.name, 'client.hider.update', { seeker: distance.toFixed(2) })
   }
 
-  public static fromPlayer(player: Player, rooEmitter: any, playerEmitter: any): Hider {
+  public static fromPlayer(player: Player, nickname: string, rooEmitter: any, playerEmitter: any): Hider {
     return new Hider(
       player.name,
       player.x,
       player.y,
       playerEmitter,
-      rooEmitter
+      rooEmitter,
+      nickname,
     );
   }
 }
@@ -66,16 +69,18 @@ export class Seeker extends Player {
   }
 
   public update(hiders: Array<Hider>) {
-    const encode = (index) => String.fromCharCode(index + 65);
-    const message: Map<string, string> = new Map<string, string>();
+    const message: any = []
 
-    for(const [index, hider] of hiders.entries()) {
-      const distance = this.proximity(hider).toFixed(2);
-      const name = 'Hider' + encode(index)
-      message.set(name, randInt(10,20))
+    for(const hider of hiders) {
+      message.push({
+        name: hider.name,
+        nickname: hider.nickname,
+        alive: hider.alive,
+        distance: this.proximity(hider)
+      })
     }
 
-    this.playerEmitter(this.name, 'seeker.update', { hider: Object.fromEntries(message) }) 
+    this.playerEmitter(this.name, 'client.seeker.update', { hiders: message })
   }
 
   public static fromPlayer(player: Player, roomEmitter: any, playerEmitter: any): Seeker {

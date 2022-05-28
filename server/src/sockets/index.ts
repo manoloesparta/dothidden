@@ -8,7 +8,9 @@ import { handleSocketException } from '../utils/requests';
 import { logger } from '../utils/utils';
 
 const lobbies: LobbyManager = LobbyManager.getInstance();
-// normalizedX=(originalX-minX)/(maxX-minX)
+
+const [minX, maxX] = [32.53330811443385, 32.452735681700744]
+const [minY, maxY] = [-117.12281426234739, -117.12281426234739]
 
 export class SocketService {
 
@@ -19,13 +21,13 @@ export class SocketService {
     const io: socketio.Server = new socketio.Server(server, options);
 
     io.on('connection', (socket) => {
-      socket.on('game.join', (data) => {
+      socket.on('server.game.join', (data) => {
         socket.join(data.lobbyId)
         socket.join(`${data.lobbyId}.${data.username}`)
       });
-      socket.on('lobby.countdown', (data) => this.roomEmit(data.lobbyId, 'lobby.countdown', {time: data.time}))
-      socket.on('player.position', (data) => handleSocketException(data, playerPositionHandler));
-      socket.on('game.start', (data) => handleSocketException(data, startGameHandler));
+      socket.on('server.lobby.countdown', (data) => this.roomEmit(data.lobbyId, 'client.lobby.countdown', {time: data.time}))
+      socket.on('server.player.position', (data) => handleSocketException(data, playerPositionHandler));
+      socket.on('server.game.start', (data) => handleSocketException(data, startGameHandler));
       socket.on('error', (error) => logger.error(error));
     });
 
@@ -45,15 +47,22 @@ export class SocketService {
   }
 }
 
+const normalizeCoordinates = ({ x, y }) => {
+  return {
+    x: (x - minX) / (maxX - minX),
+    y: (y - minY) / (maxY - minY),
+  } 
+}
+
 const playerPositionHandler = (data) => {
   const lobby: Lobby = lobbies.getLobby(data.lobbyId);
-  const { x, y } = data.player.position;
+  const { x, y } = normalizeCoordinates(data.player.position);
 
   if(data.player.type === 'hider') {
     const player: Hider = lobby.game.hiders.find((hider) => hider.name == data.player.name);
     player.moveTo(x, y);
   } else {
-    lobby.game.seeker.moveTo(x, y)  ;
+    lobby.game.seeker.moveTo(x, y);
   }
   console.log(`Player ${data.player.name} in lobby ${lobby.lobbyId} moved to ${x},${y}`)
 }

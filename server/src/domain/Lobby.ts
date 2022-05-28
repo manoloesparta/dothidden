@@ -62,8 +62,10 @@ export class Lobby {
   public assignRoles() {
     const hiderIndex = randInt(0, this.players.length);
     this.game.addSeeker(this.players[hiderIndex]);
-    const playersCopy = [... this.players];
-    playersCopy.splice(hiderIndex, 1);
-    playersCopy.forEach((player) => this.game.addHider(player));
+
+    const playersCopy = [...this.players];
+    playersCopy
+      .filter((_, index) => index !== hiderIndex)
+      .forEach((player) => this.game.addHider(player));
   }
 }

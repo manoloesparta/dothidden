@@ -11,6 +11,7 @@ const state = {
     username: '',
     socket: socket,
     isHost: false,
+    locationInterval: null, 
   },
   lobby: {
     current: '',
@@ -19,6 +20,7 @@ const state = {
   },
   player: {
     role: 'hider',
+    alive: true,
     position: {
       x: 0,
       y: 0,
@@ -55,6 +57,7 @@ const countdownTime = document.getElementById('countdown-time')
 // Game hiders
 const gameHidersDiv = document.getElementById('game-hiders')
 const seekerDistance = document.getElementById('seeker-distance')
+const latestEvent = document.getElementById('latest-event')
 
 // Game seekers
 const gameSeekersDiv = document.getElementById('game-seeker')

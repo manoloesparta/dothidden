@@ -38,7 +38,7 @@ router.delete('/game/:gameId', (req, res) => {
     const { gameId } = req.params;
     currentLobbies.removeLobby(gameId)
 
-    io.roomEmit(gameId, 'lobby.update', {names: []})
+    io.roomEmit(gameId, 'client.lobby.update', {names: []})
     res.sendStatus(204);
   })
 });

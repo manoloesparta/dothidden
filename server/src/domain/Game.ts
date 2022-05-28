@@ -22,7 +22,9 @@ export class Game {
   }
 
   public addHider(player: Player) {
-    const hider: Hider = Hider.fromPlayer(player, this.roomEmitter, this.playerEmitter);
+    const encode = (index) => String.fromCharCode(index + 65);
+    const nick = `Hider${encode(this.hiders.length)}`
+    const hider: Hider = Hider.fromPlayer(player, nick, this.roomEmitter, this.playerEmitter);
     this.hiders.push(hider);
     this.eventsManager.subscribe('hide', hider);
   }
@@ -34,24 +36,16 @@ export class Game {
   }
 
   private gameLoop() {
-    // this.hiders
-    //   .filter((item) => !item.alive)
-    //   .map((item) => this.eventsManager.unsubscribe('hide', item));
-
-    this.aliveHiders = this.aliveHiders
-      .filter((hider) => hider.alive);
-
     const alives = this.hiders.filter((item) => item.alive);
     if (alives.length === 0) {
       this.stop();
-      this.roomEmitter('game.winner', { message: 'Seeker wins!' })
+      this.roomEmitter('client.game.winner', { message: 'Seeker wins!' })
     }
   }
 
   public start() {
-    this.aliveHiders = this.hiders;
     this.seekInterval = setInterval(() => {
-      this.eventsManager.notify('seek', this.aliveHiders);
+      this.eventsManager.notify('seek', this.hiders);
     }, 2 * 1000);
     this.hideInterval = setInterval(() => {
       this.eventsManager.notify('hide', this.seeker);
@@ -61,9 +55,9 @@ export class Game {
     }, 1 * 1000);
     this.timeoutWin = setTimeout(() => {
       this.stop();
-      this.roomEmitter('game.winner', { message: 'Hiders win!' });
+      this.roomEmitter('client.game.winner', { message: 'Hiders win!' });
     }, 30 * 1000);
-    this.roomEmitter('game.start', { seeker: this.seeker.name });
+    this.roomEmitter('client.game.start', { seeker: this.seeker.name });
   }
 
   public stop() {
@@ -71,7 +65,6 @@ export class Game {
     clearInterval(this.hideInterval);
     clearInterval(this.checkInterval);
     clearTimeout(this.timeoutWin);
-    console.log('intervals cleared!');
-    this.roomEmitter('game.stop', { status: 'stop' });
+    this.roomEmitter('client.game.stop', { status: 'stop' });
   }
 }

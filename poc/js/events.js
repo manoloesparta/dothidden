@@ -20,14 +20,14 @@ confirmUsernameHostButton.addEventListener('click', async (event) => {
   state.user.username = username
   state.user.isHost = true
 
-  state.user.socket.emit('game.join', {lobbyId: lobby, username: username})
+  state.user.socket.emit('server.game.join', {lobbyId: lobby, username: username})
   
   hideDiv(setUsernameHostDiv)
   showDiv(lobbyDiv)
   showDiv(startGameButton)
   lobbyId.innerHTML = lobby
   for(const name of state.lobby.users) {
-    const elem = `<p>${name}</p>`
+    const elem = `<li>${name}</li>`
     lobbyUsers.innerHTML += elem
   }
 })
@@ -51,7 +51,7 @@ confirmUsernameGuestButton.addEventListener('click', (event) => {
   state.user.username = username
   state.user.isHost = false
 
-  state.user.socket.emit('game.join', {lobbyId: lobby, username: username})
+  state.user.socket.emit('server.game.join', {lobbyId: lobby, username: username})
 
   hideDiv(setUsernameGuestDiv)
   showDiv(lobbyDiv)
@@ -59,10 +59,10 @@ confirmUsernameGuestButton.addEventListener('click', (event) => {
 })
 
 // Lobby update
-state.user.socket.on('lobby.update', (event) => {
+state.user.socket.on('client.lobby.update', (event) => {
   lobbyUsers.innerHTML = ''
   for(const name of event.names) {
-    const elem = `<p>${name}</p>`
+    const elem = `<li>${name}</li>`
     lobbyUsers.innerHTML += elem
   }
 })
@@ -70,11 +70,11 @@ state.user.socket.on('lobby.update', (event) => {
 // Start game
 startGameButton.addEventListener('click', (event) => {
   const lobby = state.lobby.current
-  state.user.socket.emit('lobby.countdown', {time: 3, lobbyId: lobby})
+  state.user.socket.emit('server.lobby.countdown', {time: 3, lobbyId: lobby})
 })
 
 // Countdown
-state.user.socket.on('lobby.countdown', (event) => {
+state.user.socket.on('client.lobby.countdown', (event) => {
   hideDiv(lobbyDiv)
   showDiv(countdownDiv)
 
@@ -87,31 +87,41 @@ state.user.socket.on('lobby.countdown', (event) => {
 
     if(timeLeft < 0) {
       clearInterval(countdown)
-      state.user.socket.emit('game.start', { lobbyId: lobby })
+      if(state.user.isHost) {
+        state.user.socket.emit('server.game.start', { lobbyId: lobby })
+      }
+      state.user.locationInterval = startLocationUpdates()
     } 
   }, 1 * 1000)
 })
 
 // Game events
-state.user.socket.on('game.start', (event) => {
+state.user.socket.on('client.game.start', (event) => {
   hideDiv(countdownDiv)
 
   if(state.user.username === event.seeker) {
     state.player.role = 'seeker'
-    showDiv(gameSeekersDiv)
+  } else {
+    state.player.role = 'hider'
   }
   
   if(state.player.role === 'hider') {
     showDiv(gameHidersDiv)
   }
+  if(state.player.role === 'seeker') {
+    showDiv(gameSeekersDiv)
+  }
 })
 
-state.user.socket.on('game.stop', (event) => {
+state.user.socket.on('client.game.stop', (event) => {
   hideDiv(gameHidersDiv)
-  hideDiv(gameSeekersDiv)  
+  hideDiv(gameSeekersDiv)
+
+  state.player = { role: 'hider', alive: true, position: { x: 0, y: 0 } }
+  clearInterval(state.user.locationInterval)
 })
 
-state.user.socket.on('game.winner', (event) => {
+state.user.socket.on('client.game.winner', (event) => {
   showDiv(resultDiv)
   resultMessage.innerHTML = event.message;
   setTimeout(() => {
@@ -120,14 +130,30 @@ state.user.socket.on('game.winner', (event) => {
   }, 5 * 1000)
 })
 
-state.user.socket.on('hider.update', (event) => {
-  seekerDistance.innerHTML = event.seeker;
+state.user.socket.on('client.hider.update', (event) => {
+  if(state.player.alive) {
+    seekerDistance.innerHTML = event.seeker;
+  }
 })
 
-state.user.socket.on('seeker.update', (event) => {
-  console.log(`seeker update: ${event.hiders}`)
+state.user.socket.on('client.seeker.update', (event) => {
+  hidersDistances.innerHTML = ''
+  for(const hider of event.hiders) {
+    console.log(hider)
+    if(hider.alive) {
+      hidersDistances.innerHTML += `<li>${hider.nickname}: ${hider.distance}</li>`
+    } else {
+      hidersDistances.innerHTML += `<li>${hider.name}: dead</li>`
+    }
+  }
+  console.log(event.hiders)
 })
 
-state.user.socket.on('hider.dead', (event) => {
-  console.log(`hider dead: ${event.name}`)
+state.user.socket.on('client.hider.dead', (event) => {
+  if(state.user.username === event.name) {
+    state.player.alive = false
+  }
+  if(state.player.role === 'hider') {
+    latestEvent.innerHTML = `Hider ${event.name} died` 
+  }
 })
