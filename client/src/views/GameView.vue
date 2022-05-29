@@ -278,7 +278,6 @@ export default {
           title: "WINNER",
         }).then(() => {
           this.$router.push("/");
-          this.$router.go(-2);
         });
       } else {
         Swal.fire({
@@ -286,7 +285,6 @@ export default {
           title: "LOSER",
         }).then(() => {
           this.$router.push("/");
-          this.$router.go(-2);
         });
       }
     });
