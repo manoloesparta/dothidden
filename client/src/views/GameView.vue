@@ -182,28 +182,27 @@ export default {
     },
 
     updateLocation() {
-      return setInterval(() => {
-        const options = { enableHighAccuracy: true };
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const payload = {
-              lobbyId: this.lobby_id,
-              player: {
-                name: this.user,
-                type: this.role,
-                position: {
-                  x: position.coords.longitude,
-                  y: position.coords.latitude,
-                },
+      const options = { enableHighAccuracy: true };
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const payload = {
+            lobbyId: this.lobby_id,
+            player: {
+              name: this.user,
+              type: this.role,
+              position: {
+                x: position.coords.longitude,
+                y: position.coords.latitude,
               },
-            };
-            this.socket.emit("server.player.position", payload);
-            console.log("location");
-          },
-          (err) => console.error(err),
-          options
-        );
-      }, 1000);
+            },
+          };
+          this.socket.emit("server.player.position", payload);
+          console.log("location");
+        },
+        (err) => console.error(err),
+        options
+      );
+      return watchId;
     },
 
     async getResults() {
@@ -267,7 +266,7 @@ export default {
     });
 
     this.socket.on("client.game.stop", () => {
-      clearInterval(this.AB);
+      navigator.geolocation.clearWatch(this.AB);
       this.getResults();
     });
 
