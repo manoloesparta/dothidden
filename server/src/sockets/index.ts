@@ -53,8 +53,8 @@ const normalizeCoordinates = ({ x, y }) => {
   y *= factor;
   const diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
   return {
-    x: ((x - minX) / diagonal),
-    y: ((y - minY) / diagonal),
+    x: ((x - minX) / diagonal) * 100,
+    y: ((y - minY) / diagonal) * 100,
   } 
 }
 

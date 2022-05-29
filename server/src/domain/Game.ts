@@ -14,7 +14,7 @@ export class Game {
   private hideInterval: NodeJS.Timer;
   private checkInterval: NodeJS.Timer;
 
-  public constructor(rooEmitter: any, playerEmitter: any, gameDuration: number=10) {
+  public constructor(rooEmitter: any, playerEmitter: any, gameDuration: number=60) {
     this.roomEmitter = rooEmitter;
     this.playerEmitter = playerEmitter;
     this.eventsManager = new GameEventsManager();

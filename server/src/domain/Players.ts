@@ -37,7 +37,7 @@ export class Hider extends Player {
 
   public update(seeker: Seeker) {
     const distance = this.proximity(seeker);
-    if (distance < 0.001) {
+    if (distance < 0.01) {
       this.alive = false;
       this.rooEmitter('client.hider.dead', { name: this.name })
     }
