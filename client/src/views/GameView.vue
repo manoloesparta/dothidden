@@ -183,21 +183,26 @@ export default {
 
     updateLocation() {
       return setInterval(() => {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const payload = {
-            lobbyId: this.lobby_id,
-            player: {
-              name: this.user,
-              type: this.role,
-              position: {
-                x: position.coords.longitude,
-                y: position.coords.latitude,
+        const options = { enableHighAccuracy: true };
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const payload = {
+              lobbyId: this.lobby_id,
+              player: {
+                name: this.user,
+                type: this.role,
+                position: {
+                  x: position.coords.longitude,
+                  y: position.coords.latitude,
+                },
               },
-            },
-          };
-          this.socket.emit("server.player.position", payload);
-          console.log("location");
-        });
+            };
+            this.socket.emit("server.player.position", payload);
+            console.log("location");
+          },
+          (err) => console.error(err),
+          options
+        );
       }, 1000);
     },
 
@@ -242,6 +247,7 @@ export default {
   mounted() {
     const loop = setInterval(() => {
       this.hide_time -= 1;
+      this.AB = this.updateLocation();
       if (this.hide_time <= 0) {
         clearInterval(loop);
         if (this.is_host == "true") {
@@ -287,7 +293,7 @@ export default {
         this.role = "hider";
       }
       this.state = "playing";
-      this.AB = this.updateLocation();
+      //this.AB = this.updateLocation();
       this.game_time = e.duration;
       const willSmith = setInterval(() => {
         this.game_time -= 1;
