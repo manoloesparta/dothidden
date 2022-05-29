@@ -41,7 +41,7 @@ export class Hider extends Player {
       this.alive = false;
       this.rooEmitter('client.hider.dead', { name: this.name })
     }
-    this.playerEmitter(this.name, 'client.hider.update', { seeker: distance.toFixed(2) })
+    this.playerEmitter(this.name, 'client.hider.update', { seeker: distance.toFixed(3) })
   }
 
   public static fromPlayer(player: Player, nickname: string, rooEmitter: any, playerEmitter: any): Hider {
@@ -74,8 +74,8 @@ export class Seeker extends Player {
         name: hider.name,
         nickname: hider.nickname,
         alive: hider.alive,
-        distance: this.proximity(hider)
-      })
+        distance: this.proximity(hider).toFixed(3),
+      });
     }
 
     this.playerEmitter(this.name, 'client.seeker.update', { hiders: message })

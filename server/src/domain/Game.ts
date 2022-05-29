@@ -4,8 +4,8 @@ import { GameEventsManager } from './GameEventsManager';
 export class Game {
   public seeker: Seeker;
   public hiders: Array<Hider>;
+  private gameDuration: number;
   private eventsManager: GameEventsManager;
-  private aliveHiders: Array<Hider>;
   private roomEmitter: any;
   private playerEmitter: any;
 
@@ -14,11 +14,12 @@ export class Game {
   private hideInterval: NodeJS.Timer;
   private checkInterval: NodeJS.Timer;
 
-  public constructor(rooEmitter: any, playerEmitter: any) {
+  public constructor(rooEmitter: any, playerEmitter: any, gameDuration: number=10) {
     this.roomEmitter = rooEmitter;
     this.playerEmitter = playerEmitter;
     this.eventsManager = new GameEventsManager();
     this.hiders = [];
+    this.gameDuration = gameDuration;
   }
 
   public addHider(player: Player) {
@@ -39,25 +40,32 @@ export class Game {
     const alives = this.hiders.filter((item) => item.alive);
     if (alives.length === 0) {
       this.stop();
-      this.roomEmitter('client.game.winner', { message: 'Seeker wins!' })
+      this.roomEmitter('client.game.winner', { winner: 'seeker' })
     }
   }
 
   public start() {
+    this.eventsManager.notify('seek', this.hiders);
+    this.eventsManager.notify('hide', this.seeker);
+
     this.seekInterval = setInterval(() => {
       this.eventsManager.notify('seek', this.hiders);
-    }, 2 * 1000);
+    }, 1 * 1000);
     this.hideInterval = setInterval(() => {
       this.eventsManager.notify('hide', this.seeker);
-    }, 4 * 1000);
+    }, 3 * 1000);
     this.checkInterval = setInterval(() => {
       this.gameLoop();
-    }, 1 * 1000);
+    }, 0.5 * 1000);
     this.timeoutWin = setTimeout(() => {
       this.stop();
-      this.roomEmitter('client.game.winner', { message: 'Hiders win!' });
-    }, 30 * 1000);
-    this.roomEmitter('client.game.start', { seeker: this.seeker.name });
+      this.roomEmitter('client.game.winner', { winner: 'hider' });
+    }, this.gameDuration * 1000);
+
+    this.roomEmitter('client.game.start', { 
+      seeker: this.seeker.name,  
+      duration: this.gameDuration,
+    });
   }
 
   public stop() {

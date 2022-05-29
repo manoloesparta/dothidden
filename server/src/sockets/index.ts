@@ -9,9 +9,10 @@ import { logger } from '../utils/utils';
 
 const lobbies: LobbyManager = LobbyManager.getInstance();
 
-const [minX, maxX] = [32.53330811443385, 32.452735681700744]
-const [minY, maxY] = [-117.12281426234739, -117.12281426234739]
-
+const factor = Math.pow(10, 12)
+const [minY, minX] = [32.53626880580044, -117.09652185801386].map(i => i * factor)
+const [maxY, maxX] = [32.52982856516069, -117.06854105562938].map(i => i * factor)
+ 
 export class SocketService {
 
   private io: socketio.Server;
@@ -48,10 +49,12 @@ export class SocketService {
 }
 
 const normalizeCoordinates = ({ x, y }) => {
-  const diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2))
+  x *= factor;
+  y *= factor;
+  const diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
   return {
-    x: ((x - minX) / diagonal) * 100,
-    y: ((y - minY) / diagonal) * 100,
+    x: ((x - minX) / diagonal),
+    y: ((y - minY) / diagonal),
   } 
 }
 
