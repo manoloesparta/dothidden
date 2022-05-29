@@ -1,8 +1,7 @@
 <template>
   <div
     class="d-flex flex-column justify-content-center text-center"
-    style="color: white"
-    :style="backgroundStyle"
+    style="color: red"
   >
     <div v-if="state === 'hidding'">
       <div>
@@ -24,9 +23,29 @@
         <br />
         <h1 class="display-1">
           <strong>
-            {{ role == "hidder" ? "HIDE" : "SEEK" }}
+            {{ role == "hider" ? "HIDE" : "SEEK" }}
           </strong>
         </h1>
+        <div v-if="role === 'seeker'">
+          <ul>
+            <li v-for="hider in hiders" :key="hider">
+              <h1 v-if="hider.alive">
+                <strong
+                  >{{ hider["nickname"] }} : {{ hider["distance"] }}</strong
+                >
+              </h1>
+              <h1 v-if="!hider.alive">
+                <strong>{{ hider["name"] }} : dead</strong>
+              </h1>
+            </li>
+          </ul>
+        </div>
+        <div v-else>
+          <h1>
+            <strong>The seeker is {{ distance }} units away</strong>
+          </h1>
+        </div>
+        <br />
       </div>
     </div>
 
@@ -57,10 +76,6 @@
             >
               <div class="d-flex">
                 <span class="my-auto">{{ result[0] }}</span>
-
-                <div class="ms-auto">
-                  <i>{{ padTime(result[1]) }}</i>
-                </div>
               </div>
             </li>
           </ul>
@@ -71,6 +86,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 export default {
   name: "GameView",
   props: {
@@ -101,11 +117,32 @@ export default {
       // Game Roles
       // hidder
       // seeker
+      hiders: [
+        {
+          name: "mani",
+          nickname: "HiderA",
+          alive: true,
+          distance: 15.34,
+        },
+        {
+          name: "bruh",
+          nickname: "HiderB",
+          alive: false,
+          distance: 20.34,
+        },
+        {
+          name: "manuel",
+          nickname: "HiderC",
+          alive: true,
+          distance: 423,
+        },
+      ],
       role: "",
+      AB: "",
       distance: 0.0,
-      prevDistance: "",
-      hide_time: 10,
-      game_time: 30,
+      prevDistance: 0.0,
+      hide_time: window.hide_time,
+      game_time: 0,
 
       results: [],
     };
@@ -114,6 +151,7 @@ export default {
     isBusy() {
       return this.game_time > 0;
     },
+
     backgroundStyle() {
       let bgc = "rgb(255, 255, 255)";
       if (this.state == "hidding") bgc = "#9932cc";
@@ -143,32 +181,24 @@ export default {
       )}`;
     },
 
-    updateHidderLocation() {
-      this.socket.on("hider.update", (e) => {
-        this.prevDistance = e.seekerDistance;
-      });
-    },
-
-    updateSeekerLocation() {
-      this.socket.on("seeker.update", (e) => {
-        this.prevDistance = e.hiderDistance;
-      });
-    },
-
-    async getLocation() {
-      navigator.geolocation.getCurrentPosition((location) => {
-        this.socket.emit("player.position", {
-          lobbyId: this.lobby_id,
-          player: {
-            name: this.user,
-            type: this.role,
-            position: {
-              x: location.coords.longitude,
-              y: location.coords.latitude,
+    updateLocation() {
+      return setInterval(() => {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const payload = {
+            lobbyId: this.lobby_id,
+            player: {
+              name: this.user,
+              type: this.role,
+              position: {
+                x: position.coords.longitude,
+                y: position.coords.latitude,
+              },
             },
-          },
+          };
+          this.socket.emit("server.player.position", payload);
+          console.log("location");
         });
-      });
+      }, 1000);
     },
 
     async getResults() {
@@ -180,6 +210,7 @@ export default {
       );
 
       if (response.status === 200) {
+        console.log("api works");
         let json_response = await response.json();
         let results = json_response.names || [];
         for (let index = 0; index < results.length; index++) {
@@ -207,40 +238,64 @@ export default {
       });
     },
   },
+
   mounted() {
-    // USED TO SIMUlATE GAME ROUND; REMOVE FOR PRODUCTION
-    this.state = "hidding";
-    this.role = window.role;
     const loop = setInterval(() => {
-      if (this.state == "hidding") {
-        this.hide_time -= 1;
-        if (this.hide_time <= 0) {
-          this.state = "playing";
-        }
-      } else if (this.state == "playing") {
-        this.getLocation();
-        if (this.role == "seeker") {
-          this.updateSeekerLocation();
-          setInterval(() => {
-            console.log(this.prevDistance);
-          }, 2 * 1000);
-        } else {
-          this.updateHidderLocation();
-          setInterval(() => {
-            console.log(this.prevDistance);
-          }, 4 * 1000);
-        }
-        if (this.distance >= 1.0) this.delta = -1;
-        else if (this.distance <= 0.0) this.delta = 1;
-        this.distance += 0.1 * this.delta;
-        this.game_time -= 1;
-        if (this.game_time <= 0) {
-          clearInterval(loop);
-          this.state = "results";
-          this.getResults();
+      this.hide_time -= 1;
+      if (this.hide_time <= 0) {
+        clearInterval(loop);
+        if (this.is_host == "true") {
+          console.log(this.is_host);
+          this.socket.emit("server.game.start", { lobbyId: this.lobby_id });
+          console.log("obama");
         }
       }
     }, 1000);
+
+    this.socket.on("client.seeker.update", (e) => {
+      this.hiders = e.hiders;
+    });
+
+    this.socket.on("client.hider.update", (e) => {
+      this.distance = e.seeker;
+    });
+
+    this.socket.on("client.game.stop", () => {
+      clearInterval(this.AB);
+      this.getResults();
+    });
+
+    this.socket.on("client.game.winner", (e) => {
+      console.log("HOST " + this.is_host);
+      if (this.role == e.winner) {
+        Swal.fire({
+          icon: "success",
+          title: "WINNER",
+        }).then(() => this.$router.push("/"));
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "LOSER",
+        }).then(() => this.$router.push("/"));
+      }
+    });
+
+    this.socket.on("client.game.start", (e) => {
+      if (this.user == e.seeker) {
+        this.role = "seeker";
+      } else {
+        this.role = "hider";
+      }
+      this.state = "playing";
+      this.AB = this.updateLocation();
+      this.game_time = e.duration;
+      const willSmith = setInterval(() => {
+        this.game_time -= 1;
+        if (this.game_time <= 0) {
+          clearInterval(willSmith);
+        }
+      }, 1000);
+    });
   },
 };
 </script>
