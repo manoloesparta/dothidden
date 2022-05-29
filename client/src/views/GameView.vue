@@ -27,7 +27,7 @@
           </strong>
         </h1>
         <div v-if="role === 'seeker'">
-          <ul>
+          <ul style="list-style: none">
             <li v-for="hider in hiders" :key="hider">
               <h1 v-if="hider.alive">
                 <strong
@@ -277,12 +277,18 @@ export default {
         Swal.fire({
           icon: "success",
           title: "WINNER",
-        }).then(() => this.$router.push("/"));
+        }).then(() => {
+          this.$router.push("/");
+          this.$router.go(-2);
+        });
       } else {
         Swal.fire({
           icon: "error",
           title: "LOSER",
-        }).then(() => this.$router.push("/"));
+        }).then(() => {
+          this.$router.push("/");
+          this.$router.go(-2);
+        });
       }
     });
 
