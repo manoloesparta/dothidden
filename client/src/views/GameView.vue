@@ -117,30 +117,10 @@ export default {
       // Game Roles
       // hidder
       // seeker
-      hiders: [
-        {
-          name: "mani",
-          nickname: "HiderA",
-          alive: true,
-          distance: 15.34,
-        },
-        {
-          name: "bruh",
-          nickname: "HiderB",
-          alive: false,
-          distance: 20.34,
-        },
-        {
-          name: "manuel",
-          nickname: "HiderC",
-          alive: true,
-          distance: 423,
-        },
-      ],
+      hiders: [],
       role: "",
       AB: "",
       distance: 0.0,
-      prevDistance: 0.0,
       hide_time: window.hide_time,
       game_time: 0,
 
@@ -197,7 +177,6 @@ export default {
             },
           };
           this.socket.emit("server.player.position", payload);
-          console.log("location");
         },
         (err) => console.error(err),
         options
@@ -214,7 +193,6 @@ export default {
       );
 
       if (response.status === 200) {
-        console.log("api works");
         let json_response = await response.json();
         let results = json_response.names || [];
         for (let index = 0; index < results.length; index++) {
@@ -250,9 +228,7 @@ export default {
       if (this.hide_time <= 0) {
         clearInterval(loop);
         if (this.is_host == "true") {
-          console.log(this.is_host);
           this.socket.emit("server.game.start", { lobbyId: this.lobby_id });
-          console.log("obama");
         }
       }
     }, 1000);
