@@ -26,7 +26,7 @@ export class SocketService {
         socket.join(data.lobbyId)
         socket.join(`${data.lobbyId}.${data.username}`)
       });
-      socket.on('server.lobby.countdown', (data) => this.roomEmit(data.lobbyId, 'client.lobby.countdown', {time: data.time}))
+      socket.on('server.lobby.countdown', (data) => handleSocketException(data, lobbyCountdownHandler))
       socket.on('server.player.position', (data) => handleSocketException(data, playerPositionHandler));
       socket.on('server.game.start', (data) => handleSocketException(data, startGameHandler));
       socket.on('error', (error) => logger.error(error));
@@ -56,6 +56,11 @@ const normalizeCoordinates = ({ x, y }) => {
     x: ((x - minX) / diagonal),
     y: ((y - minY) / diagonal),
   } 
+}
+
+const lobbyCountdownHandler = (data) => {
+  const lobby: Lobby = lobbies.getLobby(data.lobbyId);
+  lobby.prepareGame(data.time);
 }
 
 const playerPositionHandler = (data) => {

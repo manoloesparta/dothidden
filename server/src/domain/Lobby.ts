@@ -32,8 +32,6 @@ export class Lobby {
   }
 
   public startGame() {
-    this.game = new Game(this.roomEmitter, this.playerEmitter);
-    this.assignRoles();
     this.game.start();
   }
 
@@ -59,7 +57,10 @@ export class Lobby {
     return this.findPlayer(playerName);
   }
 
-  public assignRoles() {
+  public prepareGame(time: number) {
+    this.roomEmitter('client.lobby.countdown', {time: time})
+    this.game = new Game(this.roomEmitter, this.playerEmitter)
+
     const hiderIndex = randInt(0, this.players.length);
     this.game.addSeeker(this.players[hiderIndex]);
 

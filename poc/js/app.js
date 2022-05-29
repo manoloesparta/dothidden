@@ -18,8 +18,8 @@ const startLocationUpdates = () => {
           name: state.user.username,
           type: state.player.role,
           position: {
-            x: position.coords.latitude, 
-            y: position.coords.longitude
+            x: position.coords.longitude,
+            y: position.coords.latitude,
           }
         }
       }
