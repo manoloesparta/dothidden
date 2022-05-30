@@ -1,8 +1,7 @@
 <template>
   <div
     class="d-flex flex-column justify-content-center text-center"
-    style="color: white"
-    :style="backgroundStyle"
+    style="color: red"
   >
     <div v-if="state === 'hidding'">
       <div>
@@ -24,9 +23,29 @@
         <br />
         <h1 class="display-1">
           <strong>
-            {{ role == "hidder" ? "HIDE" : "SEEK" }}
+            {{ role == "hider" ? "HIDE" : "SEEK" }}
           </strong>
         </h1>
+        <div v-if="role === 'seeker'">
+          <ul style="list-style: none">
+            <li v-for="hider in hiders" :key="hider">
+              <h1 v-if="hider.alive">
+                <strong
+                  >{{ hider["nickname"] }} : {{ hider["distance"] }}</strong
+                >
+              </h1>
+              <h1 v-if="!hider.alive">
+                <strong>{{ hider["name"] }} : dead</strong>
+              </h1>
+            </li>
+          </ul>
+        </div>
+        <div v-else>
+          <h1>
+            <strong>The seeker is {{ distance }} units away</strong>
+          </h1>
+        </div>
+        <br />
       </div>
     </div>
 
@@ -57,10 +76,6 @@
             >
               <div class="d-flex">
                 <span class="my-auto">{{ result[0] }}</span>
-
-                <div class="ms-auto">
-                  <i>{{ padTime(result[1]) }}</i>
-                </div>
               </div>
             </li>
           </ul>
@@ -71,6 +86,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 export default {
   name: "GameView",
   props: {
@@ -86,6 +102,9 @@ export default {
       type: String,
       default: "",
     },
+    socket: {
+      default: window.socket,
+    },
   },
   data() {
     return {
@@ -98,10 +117,12 @@ export default {
       // Game Roles
       // hidder
       // seeker
-      role: "hidder",
+      hiders: [],
+      role: "",
+      AB: "",
       distance: 0.0,
-      hide_time: 10,
-      game_time: 10,
+      hide_time: window.hide_time,
+      game_time: 0,
 
       results: [],
     };
@@ -110,6 +131,7 @@ export default {
     isBusy() {
       return this.game_time > 0;
     },
+
     backgroundStyle() {
       let bgc = "rgb(255, 255, 255)";
       if (this.state == "hidding") bgc = "#9932cc";
@@ -137,6 +159,29 @@ export default {
         2,
         "0"
       )}`;
+    },
+
+    updateLocation() {
+      const options = { enableHighAccuracy: true };
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const payload = {
+            lobbyId: this.lobby_id,
+            player: {
+              name: this.user,
+              type: this.role,
+              position: {
+                x: position.coords.longitude,
+                y: position.coords.latitude,
+              },
+            },
+          };
+          this.socket.emit("server.player.position", payload);
+        },
+        (err) => console.error(err),
+        options
+      );
+      return watchId;
     },
 
     async getResults() {
@@ -175,26 +220,67 @@ export default {
       });
     },
   },
+
   mounted() {
-    // USED TO SIMUlATE GAME ROUND; REMOVE FOR PRODUCTION
-    this.state = "hidding";
     const loop = setInterval(() => {
-      if (this.state == "hidding") {
-        this.hide_time -= 1;
-        if (this.hide_time <= 0) this.state = "playing";
-      } else if (this.state == "playing") {
-        if (this.distance >= 1.0) this.delta = -1;
-        else if (this.distance <= 0.0) this.delta = 1;
-        this.distance += 0.1 * this.delta;
-        this.game_time -= 1;
-        if (this.game_time <= 0) {
-          clearInterval(loop);
-          this.state = "results";
-          this.getResults();
+      this.hide_time -= 1;
+      this.AB = this.updateLocation();
+      if (this.hide_time <= 0) {
+        clearInterval(loop);
+        if (this.is_host == "true") {
+          this.socket.emit("server.game.start", { lobbyId: this.lobby_id });
         }
-        console.log(this.distance);
       }
     }, 1000);
+
+    this.socket.on("client.seeker.update", (e) => {
+      this.hiders = e.hiders;
+    });
+
+    this.socket.on("client.hider.update", (e) => {
+      this.distance = e.seeker;
+    });
+
+    this.socket.on("client.game.stop", () => {
+      navigator.geolocation.clearWatch(this.AB);
+      this.getResults();
+    });
+
+    this.socket.on("client.game.winner", (e) => {
+      console.log("HOST " + this.is_host);
+      if (this.role == e.winner) {
+        Swal.fire({
+          icon: "success",
+          title: "WINNER",
+        }).then(() => {
+          this.$router.push("/");
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "LOSER",
+        }).then(() => {
+          this.$router.push("/");
+        });
+      }
+    });
+
+    this.socket.on("client.game.start", (e) => {
+      if (this.user == e.seeker) {
+        this.role = "seeker";
+      } else {
+        this.role = "hider";
+      }
+      this.state = "playing";
+      //this.AB = this.updateLocation();
+      this.game_time = e.duration;
+      const willSmith = setInterval(() => {
+        this.game_time -= 1;
+        if (this.game_time <= 0) {
+          clearInterval(willSmith);
+        }
+      }, 1000);
+    });
   },
 };
 </script>

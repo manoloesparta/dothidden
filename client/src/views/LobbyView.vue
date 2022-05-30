@@ -140,17 +140,30 @@ export default {
     this.getUsers();
 
     this.socket = io(process.env.VUE_APP_SOCKET_URL);
+    window.socket = this.socket;
 
-    this.socket.on("lobby.update", (e) => {
-      if (e.lobby == this.lobby_id) {
-        if (!e.names.includes(this.getUser)) {
-          this.left = true;
-          this.$router.push("/");
-        }
-        this.usernames = (e.names || []).filter(
-          (username) => username !== this.getUser
-        );
+    this.socket.on("client.lobby.countdown", (e) => {
+      window.hide_time = e.time;
+      console.log(e.time);
+      this.left = true;
+      this.$router.push({
+        name: `lobby_game`,
+        params: {
+          is_host: this.is_host,
+          lobby_id: this.lobby_id,
+          user: this.getUser,
+        },
+      });
+    });
+
+    this.socket.on("client.lobby.update", (e) => {
+      if (!e.names.includes(this.getUser)) {
+        this.left = true;
+        this.$router.push("/");
       }
+      this.usernames = (e.names || []).filter(
+        (username) => username !== this.getUser
+      );
     });
   },
   methods: {
@@ -190,6 +203,10 @@ export default {
           this.$refs.usernameModal.setError("Couldn't join session!");
           return;
         }
+        this.socket.emit("server.game.join", {
+          lobbyId: lobby_id,
+          username: username,
+        });
       } else if (this.lobby_id.length === 0 && this.is_host) {
         console.log(`Creating lobby as ${username}...`);
 
@@ -204,8 +221,14 @@ export default {
         if (response.status === 200) {
           let json_response = await response.json();
           lobby_id = json_response.code || "";
-          if (lobby_id.length === 5)
+          if (lobby_id.length === 5) {
+            this.socket.emit("server.game.join", {
+              lobbyId: lobby_id,
+              username: username,
+            });
             this.$router.push({ params: { lobby_id: lobby_id } });
+            console.log("JOINED");
+          }
         } else {
           this.$refs.usernameModal.setError("Couldn't create session!");
           return;
@@ -256,21 +279,29 @@ export default {
 
       console.log(`Starting game for lobby #${this.lobby_id}...`);
 
-      this.starting_game = true;
+      this.socket.emit("server.lobby.countdown", {
+        time: 4,
+        lobbyId: this.lobby_id,
+      });
 
-      // TODO POST to API the start of this lobbie's game
+      this.starting_game = true;
+      //this.socket.emit("server.game.start", { lobbyId: this.lobby_id });
 
       this.left = true;
       console.log(
         `Lobby #${this.lobby_id} starting game as ${this.getUser}...`
       );
-      this.$router.push({
-        name: `lobby_game`,
-        params: {
-          is_host: this.is_host,
-          lobby_id: this.lobby_id,
-          user: this.getUser,
-        },
+
+      this.socket.on("client.game.start", () => {
+        console.log("socket gamee");
+        this.$router.push({
+          name: `lobby_game`,
+          params: {
+            is_host: this.is_host,
+            lobby_id: this.lobby_id,
+            user: this.getUser,
+          },
+        });
       });
 
       this.error = "Couldn't start game!";
