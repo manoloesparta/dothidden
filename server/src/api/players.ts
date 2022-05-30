@@ -18,7 +18,7 @@ router.post('/game/:gameId/players/:playerNick', (req, res) => {
     const lobby: Lobby = currentLobbies.getLobby(gameId);
     lobby.addPlayer(playerNick);
 
-    io.roomEmit(lobby.lobbyId, 'lobby.update', {names: lobby.getPlayerNames()})
+    io.roomEmit(lobby.lobbyId, 'client.lobby.update', {names: lobby.getPlayerNames()})
     res.sendStatus(200);
   })
 });
@@ -32,7 +32,7 @@ router.delete('/game/:gameId/players/:playerNick', (req, res) => {
     const lobby = currentLobbies.getLobby(gameId);
     lobby.removePlayer(playerNick);
 
-    io.roomEmit(lobby.lobbyId, 'lobby.update', {names: lobby.getPlayerNames()})
+    io.roomEmit(lobby.lobbyId, 'client.lobby.update', {names: lobby.getPlayerNames()})
     res.sendStatus(200);
   })
 });

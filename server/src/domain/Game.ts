@@ -4,72 +4,68 @@ import { GameEventsManager } from './GameEventsManager';
 export class Game {
   public seeker: Seeker;
   public hiders: Array<Hider>;
+  private gameDuration: number;
   private eventsManager: GameEventsManager;
-  private aliveHiders: Array<Hider>;
-  private emitter: any;
+  private roomEmitter: any;
+  private playerEmitter: any;
 
   private seekInterval: NodeJS.Timer;
   private timeoutWin: NodeJS.Timer;
   private hideInterval: NodeJS.Timer;
   private checkInterval: NodeJS.Timer;
 
-  public constructor() {
+  public constructor(rooEmitter: any, playerEmitter: any, gameDuration: number=60) {
+    this.roomEmitter = rooEmitter;
+    this.playerEmitter = playerEmitter;
     this.eventsManager = new GameEventsManager();
     this.hiders = [];
+    this.gameDuration = gameDuration;
   }
 
   public addHider(player: Player) {
-    const { name, x, y, emitter } = player
-    if(!this.emitter) {
-      this.emitter = emitter;
-    }
-    const hider = new Hider(name, x, y, emitter);
+    const encode = (index) => String.fromCharCode(index + 65);
+    const nick = `Hider${encode(this.hiders.length)}`
+    const hider: Hider = Hider.fromPlayer(player, nick, this.roomEmitter, this.playerEmitter);
     this.hiders.push(hider);
     this.eventsManager.subscribe('hide', hider);
   }
 
   public addSeeker(player: Player) {
-    const { name, x, y, emitter } = player
-    if(!this.emitter) {
-      this.emitter = emitter;
-    }
-    const seeker = new Seeker(name, x, y, emitter);
+    const seeker: Seeker = Seeker.fromPlayer(player, this.roomEmitter, this.playerEmitter);
     this.seeker = seeker;
     this.eventsManager.subscribe('seek', seeker);
   }
 
   private gameLoop() {
-    this.hiders
-      .filter((item) => !item.alive)
-      .map((item) => this.eventsManager.unsubscribe('hide', item));
-
-    this.aliveHiders = this.aliveHiders
-      .filter((item) => item.alive);
-
     const alives = this.hiders.filter((item) => item.alive);
     if (alives.length === 0) {
       this.stop();
-      this.emitter('game.winner', {winner: this.seeker.name})
+      this.roomEmitter('client.game.winner', { winner: 'seeker' })
     }
   }
 
   public start() {
-    this.aliveHiders = this.hiders;
+    this.eventsManager.notify('seek', this.hiders);
+    this.eventsManager.notify('hide', this.seeker);
+
     this.seekInterval = setInterval(() => {
-      this.eventsManager.notify('seek', this.aliveHiders);
-    }, 2 * 1000);
+      this.eventsManager.notify('seek', this.hiders);
+    }, 1 * 1000);
     this.hideInterval = setInterval(() => {
       this.eventsManager.notify('hide', this.seeker);
-    }, 4 * 1000);
+    }, 3 * 1000);
     this.checkInterval = setInterval(() => {
       this.gameLoop();
-    }, 1 * 1000);
+    }, 0.5 * 1000);
     this.timeoutWin = setTimeout(() => {
       this.stop();
-      this.emitter('game.winner', {winner: this.aliveHiders.map((hider) => hider.name)})
-      console.log('Hiders wins!');
-    }, 30 * 1000);
-    this.emitter('game.start', { status: 'start' })
+      this.roomEmitter('client.game.winner', { winner: 'hider' });
+    }, this.gameDuration * 1000);
+
+    this.roomEmitter('client.game.start', { 
+      seeker: this.seeker.name,  
+      duration: this.gameDuration,
+    });
   }
 
   public stop() {
@@ -77,6 +73,6 @@ export class Game {
     clearInterval(this.hideInterval);
     clearInterval(this.checkInterval);
     clearTimeout(this.timeoutWin);
-    this.emitter('game.stop', { status: 'stop' })
+    this.roomEmitter('client.game.stop', { status: 'stop' });
   }
 }

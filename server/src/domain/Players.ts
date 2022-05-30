@@ -2,13 +2,11 @@ export class Player {
   public name: string;
   public x: number;
   public y: number;
-  public emitter: any;
 
-  constructor(name: string, x: number, y: number, emitter: any) {
+  constructor(name: string, x: number, y: number) {
     this.name = name;
     this.x = x;
     this.y = y;
-    this.emitter = emitter;
   }
 
   protected proximity(player: Player): number {
@@ -24,34 +22,72 @@ export class Player {
 }
 
 export class Hider extends Player {
-  alive: boolean;
+  public alive: boolean;
+  public nickname: string;
+  private playerEmitter: any;
+  private rooEmitter: any;
   
-  constructor(name: string, x: number, y: number, emitter: any) {
-    super(name, x, y, emitter);
+  constructor(name: string, x: number, y: number, playerEmitter: any, roomEmitter: any, nickname: string) {
+    super(name, x, y);
     this.alive = true;
+    this.playerEmitter = playerEmitter;
+    this.rooEmitter = roomEmitter;
+    this.nickname = nickname;
   }
 
   public update(seeker: Seeker) {
     const distance = this.proximity(seeker);
-    if (distance < 3) {
+    if (distance < 0.01) {
       this.alive = false;
-      this.emitter('hider.dead', { name: this.name })
+      this.rooEmitter('client.hider.dead', { name: this.name })
     }
-    this.emitter('hider.update', { seekerDistance: distance.toFixed(2) })
+    this.playerEmitter(this.name, 'client.hider.update', { seeker: distance.toFixed(3) })
+  }
+
+  public static fromPlayer(player: Player, nickname: string, rooEmitter: any, playerEmitter: any): Hider {
+    return new Hider(
+      player.name,
+      player.x,
+      player.y,
+      playerEmitter,
+      rooEmitter,
+      nickname,
+    );
   }
 }
 
 export class Seeker extends Player {
-  public update(hiders: Array<Hider>) {
-    const encode = (index) => String.fromCharCode(index + 65);
-    const message: Map<string, string> = new Map<string, string>();
+  private playerEmitter: any;
+  private rooEmitter: any;
 
-    for(const [index, hider] of hiders.entries()) {
-      const distance = this.proximity(hider).toFixed(2);
-      const name = 'Hider' + encode(index)
-      message.set(name, distance)
+  constructor(name: string, x: number, y: number, playerEmitter: any, roomEmitter: any) {
+    super(name, x, y);
+    this.playerEmitter = playerEmitter;
+    this.rooEmitter = roomEmitter;
+  }
+
+  public update(hiders: Array<Hider>) {
+    const message: any = []
+
+    for(const hider of hiders) {
+      message.push({
+        name: hider.name,
+        nickname: hider.nickname,
+        alive: hider.alive,
+        distance: this.proximity(hider).toFixed(3),
+      });
     }
 
-   this.emitter('seeker.update', { hiderDistance: message }) 
+    this.playerEmitter(this.name, 'client.seeker.update', { hiders: message })
+  }
+
+  public static fromPlayer(player: Player, roomEmitter: any, playerEmitter: any): Seeker {
+    return new Seeker(
+      player.name, 
+      player.x, 
+      player.y,
+      playerEmitter,
+      roomEmitter,
+    );
   }
 }
