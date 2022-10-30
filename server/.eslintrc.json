@@ -16,7 +16,11 @@
     "no-console": "off",
     "max-classes-per-file": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/quotes": ["error", "single", {"allowTemplateLiterals": true} ]
+    "@typescript-eslint/quotes": [
+      "error",
+      "single",
+      { "allowTemplateLiterals": true }
+    ]
   },
   "root": true,
   "parser": "@typescript-eslint/parser",

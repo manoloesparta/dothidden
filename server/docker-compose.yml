@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 services:
-
   dothidden:
     build: .
     image: dothidden_server
@@ -12,11 +11,9 @@ services:
       - dothidden_network
 
 networks:
-
   dothidden_network:
     name: dothidden_network
     driver: bridge
 
 volumes:
-
   dothidden_volume:

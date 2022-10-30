@@ -1,82 +1,80 @@
 swagger: "2.0"
 
 info:
-
   description: "This is a sample server Petstore server."
   version: "1.0.0"
   title: "Swagger Petstore"
 
 paths:
-
   /game:
     post:
       summary: "Create a game lobby"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Host player of the lobby"
-        required: true
-        schema:
-          $ref: "#/definitions/Host"
+        - in: "body"
+          name: "body"
+          description: "Host player of the lobby"
+          required: true
+          schema:
+            $ref: "#/definitions/Host"
       responses:
         "201":
           description: "Game created"
           schema:
             $ref: "#/definitions/Game"
-  
+
   /game/{gameId}/players:
     get:
       summary: "Get the players of a lobby"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "gameId"
-        in: "path"
-        description: "The code identifier of a game lobby"
-        required: true
-        type: "string"
+        - name: "gameId"
+          in: "path"
+          description: "The code identifier of a game lobby"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "Users in the specified lobby"
           schema:
             $ref: "#/definitions/ArrayOfPlayers"
-            
+
   /game/{gameId}/players/{playerNick}:
     post:
       summary: "Add a player to lobby"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "gameId"
-        in: "path"
-        description: "The code identifier of a game lobby"
-        required: true
-        type: "string"
-      - name: "playerNick"
-        in: "path"
-        description: "Nickname identifier of a user"
-        required: true
-        type: "string"
+        - name: "gameId"
+          in: "path"
+          description: "The code identifier of a game lobby"
+          required: true
+          type: "string"
+        - name: "playerNick"
+          in: "path"
+          description: "Nickname identifier of a user"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "Player added to lobby"
     delete:
       summary: "Remove a player from the lobby"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "gameId"
-        in: "path"
-        description: "The code identifier of a game lobby"
-        required: true
-        type: "string"
-      - name: "playerNick"
-        in: "path"
-        description: "Nickname identifier of a user"
-        required: true
-        type: "string"
+        - name: "gameId"
+          in: "path"
+          description: "The code identifier of a game lobby"
+          required: true
+          type: "string"
+        - name: "playerNick"
+          in: "path"
+          description: "Nickname identifier of a user"
+          required: true
+          type: "string"
       responses:
         "204":
           description: "Player removed"
@@ -84,14 +82,13 @@ paths:
           description: "Player not found"
 
 definitions:
-
   Player:
     type: "object"
     properties:
       nickname:
         type: "string"
         description: "Identifier of a player"
-        
+
   Host:
     type: "object"
     properties:
@@ -99,12 +96,12 @@ definitions:
         type: "string"
         description: "Nickname of the player creating the lobby"
         example: "DAGZ"
-        
+
   ArrayOfPlayers:
     type: "array"
     items:
       $ref: "#/definitions/Player"
-    example: [{"nickname": "miza"}, {"nickname": "manolo"}]
+    example: [{ "nickname": "miza" }, { "nickname": "manolo" }]
 
   Game:
     type: "object"
@@ -112,5 +109,4 @@ definitions:
       code:
         type: "string"
         description: "Game code to join lobby"
-        example:  ASKDLJ
-      
+        example: ASKDLJ

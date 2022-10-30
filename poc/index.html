@@ -1,65 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <div id="app">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="home">
+        <input id="lobby-input" />
+        <button id="join-lobby-button">Join lobby</button>
+        <button id="create-lobby-button">Create lobby</button>
+      </div>
 
-    <div id="home">
-      <input id="lobby-input">
-      <button id="join-lobby-button">Join lobby</button>
-      <button id="create-lobby-button">Create lobby</button>
+      <div id="host-set-username">
+        <p>Your username:</p>
+        <input id="host-username-input" />
+        <button id="host-confirm-username">Done</button>
+      </div>
+
+      <div id="guest-set-username">
+        <p>Your username:</p>
+        <input id="guest-username-input" />
+        <button id="guest-confirm-username">Done</button>
+      </div>
+
+      <div id="lobby">
+        <p>Users in lobby: <span id="lobby-id"></span></p>
+        <button id="start-game">Start</button>
+        <ul id="lobby-users">
+          <!-- list of users in lobby -->
+        </ul>
+      </div>
+
+      <div id="countdown">
+        <p>You have <span id="countdown-time">x</span> seconds to hide</p>
+      </div>
+
+      <div id="game-hiders">
+        <p>The seeker is <span id="seeker-distance">x</span> units away</p>
+        <p>Latest event: <span id="latest-event">none</span></p>
+      </div>
+
+      <div id="game-seeker">
+        <p>Hiders distances:</p>
+        <ul id="hiders-distances">
+          <!-- list of hiders and distances -->
+        </ul>
+      </div>
+
+      <div id="result">
+        <p id="result-message">Result</p>
+      </div>
     </div>
-
-    <div id="host-set-username">
-      <p>Your username:</p>
-      <input id="host-username-input">
-      <button id="host-confirm-username">Done</button>
-    </div>
-
-    <div id="guest-set-username">
-      <p>Your username:</p>
-      <input id="guest-username-input">
-      <button id="guest-confirm-username">Done</button>
-    </div>
-
-    <div id="lobby">
-      <p>Users in lobby: <span id="lobby-id"></span></p>
-      <button id="start-game">Start</button>
-      <ul id="lobby-users">
-        <!-- list of users in lobby -->
-      </ul>
-    </div>
-
-    <div id="countdown">
-      <p>You have <span id="countdown-time">x</span> seconds to hide</p>
-    </div>
-
-    <div id="game-hiders">
-      <p>The seeker is <span id="seeker-distance">x</span> units away</p>
-      <p>Latest event: <span id="latest-event">none</span></p>
-    </div>
-
-    <div id="game-seeker">
-      <p>Hiders distances:</p>
-      <ul id="hiders-distances">
-        <!-- list of hiders and distances -->
-      </ul>
-    </div> 
-
-    <div id="result">
-      <p id="result-message">Result</p>
-    </div>
-
-  </div>
-  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
-  <script src="js/constants.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/events.js"></script>
-  <script src="js/app.js"></script>
-</body>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/app.js"></script>
+  </body>
 </html>

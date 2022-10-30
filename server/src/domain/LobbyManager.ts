@@ -1,17 +1,15 @@
-import { Lobby } from './Lobby'
-import { NotFoundException } from '../utils/exceptions'
-import { randString } from '../utils/utils'
-import { SocketService } from '../sockets';
-
+import { Lobby } from "./Lobby";
+import { NotFoundException } from "../utils/exceptions";
+import { randString } from "../utils/utils";
+import { SocketService } from "../sockets";
 
 export class LobbyManager {
-
   private lobbies: Map<string, Lobby>;
 
   private static instance: LobbyManager;
 
   public static getInstance(): LobbyManager {
-    if(!LobbyManager.instance) {
+    if (!LobbyManager.instance) {
       LobbyManager.instance = new LobbyManager();
     }
     return LobbyManager.instance;
@@ -31,7 +29,7 @@ export class LobbyManager {
   }
 
   private checkExists(lobbyId: string): boolean {
-    return this.lobbies.has(lobbyId)
+    return this.lobbies.has(lobbyId);
   }
 
   public getLobby(lobbyId: string): Lobby {
@@ -42,6 +40,6 @@ export class LobbyManager {
   }
 
   public removeLobby(lobbyId: string) {
-    this.lobbies.delete(lobbyId)
+    this.lobbies.delete(lobbyId);
   }
 }

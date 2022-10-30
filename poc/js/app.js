@@ -1,13 +1,15 @@
-[setUsernameGuestDiv, 
-  setUsernameHostDiv, 
-  lobbyDiv, 
-  countdownDiv, 
-  gameHidersDiv, 
-  gameSeekersDiv, 
+[
+  setUsernameGuestDiv,
+  setUsernameHostDiv,
+  lobbyDiv,
+  countdownDiv,
+  gameHidersDiv,
+  gameSeekersDiv,
   resultDiv,
-  startGameButton].map((div) => hideDiv(div))
+  startGameButton,
+].map((div) => hideDiv(div));
 
-navigator.geolocation.getCurrentPosition(() => {}) 
+navigator.geolocation.getCurrentPosition(() => {});
 
 const startLocationUpdates = () => {
   return setInterval(() => {
@@ -20,10 +22,10 @@ const startLocationUpdates = () => {
           position: {
             x: position.coords.longitude,
             y: position.coords.latitude,
-          }
-        }
-      }
-      state.user.socket.emit('server.player.position', payload);
+          },
+        },
+      };
+      state.user.socket.emit("server.player.position", payload);
     });
-  }, 1 * 1000)
-}
+  }, 1 * 1000);
+};
